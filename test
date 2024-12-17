@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Colors for output
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+echo "🧹 Running formatters and linters..."
+
+# Run black formatter
+echo -n "Running black... "
+if black cli.py granite/tests/test_cli.py; then
+    echo -e "${GREEN}✓${NC}"
+else
+    echo -e "${RED}✗${NC}"
+    exit 1
+fi
+
+# Run ruff
+echo -n "Running ruff... "
+if ruff check --fix cli.py granite/tests/test_cli.py; then
+    echo -e "${GREEN}✓${NC}"
+else
+    echo -e "${RED}✗${NC}"
+    exit 1
+fi
+
+# Run mypy
+echo -n "Running mypy... "
+if mypy cli.py granite/tests/test_cli.py; then
+    echo -e "${GREEN}✓${NC}"
+else
+    echo -e "${RED}✗${NC}"
+    exit 1
+fi
+
+echo "🧪 Running tests..."
+pytest granite/tests/test_cli.py -v
+
+echo -e "\n${GREEN}All done!${NC}"

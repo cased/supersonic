@@ -152,13 +152,13 @@ class Granite:
         except Exception as e:
             raise GitHubError(f"Failed to create PR from local changes: {e}")
 
-    async def create_pr_from_file(self, repo: str, file_path: str, upstream_path: str, **kwargs) -> str:
+    async def create_pr_from_file(self, repo: str, local_file_path: str, upstream_path: str, **kwargs) -> str:
         """
         Create a PR to update a file in a repository.
         
         Args:
             repo: Repository name (owner/repo)
-            file_path: Path to local file
+            local_file_path: Path to local file
             upstream_path: Where to put the file in the repo
             **kwargs: Additional PR options (title, draft, etc)
         
@@ -167,7 +167,7 @@ class Granite:
         """
         try:
             # Read local file
-            content = Path(file_path).read_text()
+            content = Path(local_file_path).read_text()
             
             # Create PR with single file change
             return await self.create_pr(
