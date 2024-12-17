@@ -1,5 +1,5 @@
 # granite/core/diff.py
-from typing import Dict, List, Tuple, Optional
+from typing import List, Tuple, Optional
 from dataclasses import dataclass
 import re
 from pathlib import Path
@@ -129,10 +129,10 @@ class DiffParser:
         Parse a diff with detailed hunk information.
         Useful for more granular analysis of changes.
         """
-        result = []
-        current_file = None
-        current_hunks = []
-        current_hunk = None
+        result: List[Tuple[FileDiff, List[DiffHunk]]] = []
+        current_file: Optional[FileDiff] = None
+        current_hunks: List[DiffHunk] = []
+        current_hunk: Optional[DiffHunk] = None
 
         for line in diff_content.splitlines():
             if line.startswith("diff --git"):

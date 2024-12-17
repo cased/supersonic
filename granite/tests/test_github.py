@@ -1,8 +1,6 @@
 import pytest
 import pytest_asyncio
 from unittest.mock import Mock, AsyncMock, patch, PropertyMock
-import aiohttp
-from github import Github, Auth
 from granite.core.github import GitHubAPI
 from granite.core.errors import GitHubError
 

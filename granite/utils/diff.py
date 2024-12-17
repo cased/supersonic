@@ -20,7 +20,7 @@ class FileDiff:
     new_content: str = ""
     old_file: str = ""
     new_file: str = ""
-    hunks: List[DiffHunk] = None
+    hunks: List[DiffHunk] = []
     is_new: bool = False
     is_delete: bool = False
     is_new_file: bool = False
@@ -49,7 +49,7 @@ class DiffParser:
         diffs = []
         current_file = None
         current_hunk = None
-        current_hunks = []
+        current_hunks: List[DiffHunk] = []
 
         lines = diff_content.splitlines()
         i = 0
@@ -117,9 +117,9 @@ class DiffParser:
 
     def parse_detailed(self, diff_content: str) -> List[FileDiff]:
         """Parse diff content into detailed FileDiff objects"""
-        diffs = []
-        current_diff = None
-        current_hunk = None
+        diffs: List[FileDiff] = []
+        current_diff: Optional[FileDiff] = None
+        current_hunk: Optional[DiffHunk] = None
 
         for line in diff_content.splitlines():
             if line.startswith("diff --git"):
@@ -128,15 +128,15 @@ class DiffParser:
                 current_diff = self._parse_diff_header(line)
             elif line.startswith("@@"):
                 if current_hunk:
-                    current_diff.hunks.append(current_hunk)
+                    current_diff.hunks.append(current_hunk)  # type: ignore
                 current_hunk = self._parse_hunk_header(line)
             elif current_hunk is not None:
-                current_hunk.content.append(line)
+                current_hunk.content.append(line)  # type: ignore
 
         if current_hunk:
-            current_diff.hunks.append(current_hunk)
+            current_diff.hunks.append(current_hunk)  # type: ignore
         if current_diff:
-            diffs.append(current_diff)
+            diffs.append(current_diff)  # type: ignore
 
         return diffs
 

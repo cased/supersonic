@@ -1,12 +1,9 @@
-from typing import Optional, Union, Dict, List
+from typing import Optional, Union, Dict, List, Mapping
 from pathlib import Path
 import time
-import uuid
-import asyncio
-from datetime import datetime
 
 from .config import GraniteConfig, PRConfig
-from .errors import GitHubError, ConfigError
+from .errors import GitHubError
 from .diff import FileDiff
 from .github import GitHubAPI
 
@@ -130,26 +127,6 @@ class Granite:
                     description.append("```")
         return "\n".join(description)
 
-    async def create_pr_from_local(
-        self,
-        repo: str,
-        path: Union[str, Path],
-        files: Optional[List[str]] = None,
-        config: Optional[Union[PRConfig, Dict]] = None,
-        **kwargs,
-    ) -> str:
-        """Create PR from local directory changes"""
-        try:
-            # Get diff from local changes
-            diff = await self.github.get_local_diff(path, files)
-
-            # Create PR from diff
-            return await self.create_pr_from_diff(
-                repo=repo, diff=diff, config=config, **kwargs
-            )
-        except Exception as e:
-            raise GitHubError(f"Failed to create PR from local changes: {e}")
-
     async def create_pr_from_file(
         self, repo: str, local_file_path: str, upstream_path: str, **kwargs
     ) -> str:
@@ -177,7 +154,7 @@ class Granite:
             raise GitHubError(f"Failed to update file: {e}")
 
     async def create_pr_from_files(
-        self, repo: str, files: Dict[str, str], **kwargs
+        self, repo: str, files: Mapping[str, str], **kwargs
     ) -> str:
         """
         Create a PR to update multiple files with provided content.
@@ -193,7 +170,9 @@ class Granite:
             URL of the created PR
         """
         try:
-            return await self.create_pr(repo=repo, changes=files, config=kwargs)
+            # Convert Mapping to Dict[str, Optional[str]] for create_pr
+            changes: Dict[str, Optional[str]] = {k: v for k, v in files.items()}
+            return await self.create_pr(repo=repo, changes=changes, config=kwargs)
         except Exception as e:
             raise GitHubError(f"Failed to update files: {e}")
 

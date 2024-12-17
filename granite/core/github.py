@@ -1,12 +1,8 @@
-from typing import Optional, List, Dict, Any
+from typing import Optional, List
 import aiohttp
 from github import Github, Auth
-from pathlib import Path
-import base64
-import asyncio
 
 from .errors import GitHubError
-from .config import PRConfig
 
 
 class GitHubAPI:
@@ -63,6 +59,8 @@ class GitHubAPI:
                 # Delete file
                 try:
                     contents = repo_obj.get_contents(path, ref=branch)
+                    if isinstance(contents, List):
+                        raise GitHubError(f"Path '{path}' points to a directory")
                     repo_obj.delete_file(
                         path=path, message=message, sha=contents.sha, branch=branch
                     )
@@ -73,6 +71,8 @@ class GitHubAPI:
                 # Update or create file
                 try:
                     contents = repo_obj.get_contents(path, ref=branch)
+                    if isinstance(contents, List):
+                        raise GitHubError(f"Path '{path}' points to a directory")
                     repo_obj.update_file(
                         path=path,
                         message=message,

@@ -1,8 +1,7 @@
-from unittest.mock import AsyncMock, Mock, patch
+from unittest.mock import AsyncMock, Mock
 import pytest
-from pathlib import Path
 from granite import Granite
-from granite.core.config import GraniteConfig, PRConfig
+from granite.core.config import GraniteConfig
 from granite.core.errors import GitHubError
 
 
