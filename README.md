@@ -386,8 +386,7 @@ uv run pytest
 ### Code Style
 
 We use:
-- `black` for code formatting
-- `ruff` for linting
+- `ruff` for linting and formatting
 - `mypy` for type checking
 
 All run in GitHub Actions on every PR.

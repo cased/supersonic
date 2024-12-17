@@ -217,7 +217,9 @@ class DiffParser:
             action = (
                 "Add"
                 if diff.is_new_file
-                else "Delete" if diff.is_deletion else "Update"
+                else "Delete"
+                if diff.is_deletion
+                else "Update"
             )
             return f"{action} {diff.path}"
         else:
