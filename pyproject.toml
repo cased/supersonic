@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "granite"
+name = "supersonic"
 version = "0.1.0"
-description = "Rock-solid GitHub PR automation for modern applications"
+description = "GitHub PR automation for modern applications"
 readme = "README.md"
 requires-python = ">=3.9"
 license = "MIT"
@@ -32,10 +32,10 @@ dev = [
 ]
 
 [project.scripts]
-granite = "cli:cli"
+supersonic = "cli:cli"
 
 [tool.hatch.build.targets.wheel]
-packages = ["granite"]
+packages = ["supersonic"]
 
 [tool.ruff]
 line-length = 88

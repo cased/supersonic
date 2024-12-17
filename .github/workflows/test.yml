@@ -37,8 +37,8 @@ jobs:
 
     - name: Type check with mypy
       run: |
-        mypy cli.py granite/tests/test_cli.py
+        mypy cli.py supersonic/tests/test_cli.py
 
     - name: Run tests
       run: |
-        pytest granite/tests/test_cli.py -v
+        pytest supersonic/tests/test_cli.py -v

@@ -26,6 +26,6 @@ else
 fi
 
 echo "🧪 Running tests..."
-pytest granite/tests/test_cli.py -v
+pytest supersonic/tests/test_cli.py -v
 
 echo -e "\n${GREEN}All done!${NC}"

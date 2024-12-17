@@ -1,4 +1,3 @@
-# granite/utils/git.py
 from typing import Optional, List, Union, cast
 from pathlib import Path
 import aiohttp
@@ -8,7 +7,7 @@ from git import Repo
 import tempfile
 import os
 
-from granite.core.errors import GitError
+from supersonic.core.errors import GitError
 
 
 class GitHandler:

@@ -1,8 +1,8 @@
 from unittest.mock import AsyncMock, Mock
 import pytest
-from granite import Granite
-from granite.core.config import GraniteConfig
-from granite.core.errors import GitHubError
+from supersonic import Supersonic
+from supersonic.core.config import SupersonicConfig
+from supersonic.core.errors import GitHubError
 
 
 @pytest.fixture
@@ -26,11 +26,11 @@ def mock_github():
 @pytest.mark.asyncio
 async def test_create_pr_from_content(mock_github):
     """Test creating PR from string content"""
-    config = GraniteConfig(github_token="test")
-    granite = Granite(config)
-    granite.github = mock_github
+    config = SupersonicConfig(github_token="test")
+    supersonic = Supersonic(config)
+    supersonic.github = mock_github
 
-    pr_url = await granite.create_pr_from_content(
+    pr_url = await supersonic.create_pr_from_content(
         repo="test/repo", content="print('test')", path="test.py"
     )
 
@@ -43,13 +43,13 @@ async def test_create_pr_from_content(mock_github):
 @pytest.mark.asyncio
 async def test_create_pr_from_content_error(mock_github):
     """Test error handling in create_pr_from_content"""
-    config = GraniteConfig(github_token="test")
-    granite = Granite(config)
-    granite.github = mock_github
+    config = SupersonicConfig(github_token="test")
+    supersonic = Supersonic(config)
+    supersonic.github = mock_github
     mock_github.update_file.side_effect = Exception("File update failed")
 
     with pytest.raises(GitHubError, match="Failed to update content"):
-        await granite.create_pr_from_content(
+        await supersonic.create_pr_from_content(
             repo="test/repo", content="print('test')", path="test.py"
         )
 
@@ -60,11 +60,11 @@ async def test_create_pr_from_file(mock_github, tmp_path):
     test_file = tmp_path / "test.py"
     test_file.write_text("print('test')")
 
-    config = GraniteConfig(github_token="test")
-    granite = Granite(config)
-    granite.github = mock_github
+    config = SupersonicConfig(github_token="test")
+    supersonic = Supersonic(config)
+    supersonic.github = mock_github
 
-    pr_url = await granite.create_pr_from_file(
+    pr_url = await supersonic.create_pr_from_file(
         repo="test/repo", local_file_path=str(test_file), upstream_path="src/test.py"
     )
 
@@ -77,12 +77,12 @@ async def test_create_pr_from_file(mock_github, tmp_path):
 @pytest.mark.asyncio
 async def test_create_pr_from_file_not_found(mock_github):
     """Test error handling when file doesn't exist"""
-    config = GraniteConfig(github_token="test")
-    granite = Granite(config)
-    granite.github = mock_github
+    config = SupersonicConfig(github_token="test")
+    supersonic = Supersonic(config)
+    supersonic.github = mock_github
 
     with pytest.raises(GitHubError, match="Failed to update file"):
-        await granite.create_pr_from_file(
+        await supersonic.create_pr_from_file(
             repo="test/repo", local_file_path="nonexistent.py", upstream_path="test.py"
         )
 
@@ -90,13 +90,13 @@ async def test_create_pr_from_file_not_found(mock_github):
 @pytest.mark.asyncio
 async def test_create_pr_from_files(mock_github):
     """Test creating PR from multiple files"""
-    config = GraniteConfig(github_token="test")
-    granite = Granite(config)
-    granite.github = mock_github
+    config = SupersonicConfig(github_token="test")
+    supersonic = Supersonic(config)
+    supersonic.github = mock_github
 
     files = {"src/test1.py": "print('test1')", "src/test2.py": "print('test2')"}
 
-    pr_url = await granite.create_pr_from_files(repo="test/repo", files=files)
+    pr_url = await supersonic.create_pr_from_files(repo="test/repo", files=files)
 
     assert pr_url == "https://github.com/test/test/pull/1"
     assert mock_github.update_file.call_count == 2
@@ -114,11 +114,11 @@ async def test_create_pr_from_files(mock_github):
 @pytest.mark.asyncio
 async def test_create_pr_from_content_with_options(mock_github):
     """Test creating PR from content with custom options"""
-    config = GraniteConfig(github_token="test")
-    granite = Granite(config)
-    granite.github = mock_github
+    config = SupersonicConfig(github_token="test")
+    supersonic = Supersonic(config)
+    supersonic.github = mock_github
 
-    pr_url = await granite.create_pr_from_content(
+    pr_url = await supersonic.create_pr_from_content(
         repo="test/repo",
         content="print('test')",
         path="test.py",
@@ -148,12 +148,12 @@ async def test_create_pr_from_file_with_branch_name(mock_github, tmp_path):
     test_file = tmp_path / "test.py"
     test_file.write_text("print('test')")
 
-    config = GraniteConfig(github_token="test")
-    granite = Granite(config)
-    granite.github = mock_github
+    config = SupersonicConfig(github_token="test")
+    supersonic = Supersonic(config)
+    supersonic.github = mock_github
 
     branch_name = "feature/custom-branch"
-    pr_url = await granite.create_pr_from_file(
+    pr_url = await supersonic.create_pr_from_file(
         repo="test/repo",
         file_path=str(test_file),
         upstream_path="src/test.py",

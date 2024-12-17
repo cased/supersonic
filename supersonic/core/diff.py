@@ -1,4 +1,3 @@
-# granite/core/diff.py
 from typing import List, Tuple, Optional
 from dataclasses import dataclass
 import re

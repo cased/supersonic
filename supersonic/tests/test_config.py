@@ -1,6 +1,6 @@
 import pytest
 from pydantic import ValidationError
-from granite.core.config import GraniteConfig, PRConfig, MergeStrategy
+from supersonic.core.config import SupersonicConfig, PRConfig, MergeStrategy
 
 
 def test_pr_config_defaults():
@@ -58,9 +58,9 @@ def test_pr_config_merge_strategy_validation():
         PRConfig(title="Test", merge_strategy="invalid")
 
 
-def test_granite_config_minimal():
-    """Test GraniteConfig with minimal required values"""
-    config = GraniteConfig(github_token="test-token")
+def test_supersonic_config_minimal():
+    """Test SupersonicConfig with minimal required values"""
+    config = SupersonicConfig(github_token="test-token")
 
     assert config.github_token == "test-token"
     assert config.base_url == "https://api.github.com"
@@ -68,9 +68,9 @@ def test_granite_config_minimal():
     assert isinstance(config.default_pr_config, PRConfig)
 
 
-def test_granite_config_full():
-    """Test GraniteConfig with all values"""
-    config = GraniteConfig(
+def test_supersonic_config_full():
+    """Test SupersonicConfig with all values"""
+    config = SupersonicConfig(
         github_token="test-token",
         base_url="https://github.example.com",
         app_name="test-app",
@@ -84,15 +84,15 @@ def test_granite_config_full():
     assert config.default_pr_config.base_branch == "develop"
 
 
-def test_granite_config_dict_initialization():
-    """Test GraniteConfig initialization from dict"""
+def test_supersonic_config_dict_initialization():
+    """Test SupersonicConfig initialization from dict"""
     config_dict = {
         "github_token": "test-token",
         "app_name": "test-app",
         "default_pr_config": {"title": "Default PR", "labels": ["auto"]},
     }
 
-    config = GraniteConfig(**config_dict)
+    config = SupersonicConfig(**config_dict)
     assert config.github_token == "test-token"
     assert config.app_name == "test-app"
     assert config.default_pr_config.title == "Default PR"
@@ -103,7 +103,7 @@ def test_config_validation():
     """Test configuration validation"""
     # Missing required github_token
     with pytest.raises(ValidationError, match="github_token"):
-        GraniteConfig.model_validate({})
+        SupersonicConfig.model_validate({})
 
 
 def test_pr_config_mutation():
