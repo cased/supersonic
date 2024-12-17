@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, patch
 from pathlib import Path
 
 from cli import cli
-from granite.core.config import GraniteConfig
+from supersonic.core.config import SupersonicConfig
 
 
 @pytest.fixture
@@ -14,9 +14,9 @@ def runner():
 
 
 @pytest.fixture
-def mock_granite():
-    """Mock Granite class"""
-    with patch("cli.Granite") as mock:
+def mock_supersonic():
+    """Mock Supersonic class"""
+    with patch("cli.Supersonic") as mock:
         # Set up async mock methods
         instance = mock.return_value
         instance.create_pr_from_file = AsyncMock()
@@ -39,7 +39,7 @@ def test_cli_requires_token(runner):
     assert "Missing option '--token'" in result.output
 
 
-def test_update_file(runner, mock_granite):
+def test_update_file(runner, mock_supersonic):
     """Test updating a single file"""
     with runner.isolated_filesystem():
         # Create a test file
@@ -63,9 +63,9 @@ def test_update_file(runner, mock_granite):
         assert result.exit_code == 0
         assert "Created PR:" in result.output
 
-        # Verify Granite was called correctly
-        mock_granite.assert_called_once_with(GraniteConfig(github_token="test-token"))
-        instance = mock_granite.return_value
+        # Verify Supersonic was called correctly
+        mock_supersonic.assert_called_once_with(SupersonicConfig(github_token="test-token"))
+        instance = mock_supersonic.return_value
         instance.create_pr_from_file.assert_called_once_with(
             repo="owner/repo",
             local_file_path="test.txt",
@@ -75,7 +75,7 @@ def test_update_file(runner, mock_granite):
         )
 
 
-def test_update_file_default_path(runner, mock_granite):
+def test_update_file_default_path(runner, mock_supersonic):
     """Test updating a file using the local filename as path"""
     with runner.isolated_filesystem():
         Path("test.txt").write_text("test content")
@@ -85,7 +85,7 @@ def test_update_file_default_path(runner, mock_granite):
         )
 
         assert result.exit_code == 0
-        instance = mock_granite.return_value
+        instance = mock_supersonic.return_value
         instance.create_pr_from_file.assert_called_once_with(
             repo="owner/repo",
             local_file_path="test.txt",
@@ -95,7 +95,7 @@ def test_update_file_default_path(runner, mock_granite):
         )
 
 
-def test_update_content(runner, mock_granite):
+def test_update_content(runner, mock_supersonic):
     """Test updating content directly"""
     result = runner.invoke(
         cli,
@@ -112,7 +112,7 @@ def test_update_content(runner, mock_granite):
     )
 
     assert result.exit_code == 0
-    instance = mock_granite.return_value
+    instance = mock_supersonic.return_value
     instance.create_pr_from_content.assert_called_once_with(
         repo="owner/repo",
         content="Hello World",
@@ -122,7 +122,7 @@ def test_update_content(runner, mock_granite):
     )
 
 
-def test_update_files(runner, mock_granite):
+def test_update_files(runner, mock_supersonic):
     """Test updating multiple files"""
     with runner.isolated_filesystem():
         # Create test files
@@ -149,7 +149,7 @@ def test_update_files(runner, mock_granite):
         )
 
         assert result.exit_code == 0
-        instance = mock_granite.return_value
+        instance = mock_supersonic.return_value
         instance.create_pr_from_files.assert_called_once_with(
             repo="owner/repo",
             files={"path/to/file1.txt": "content 1", "path/to/file2.txt": "content 2"},
@@ -158,9 +158,9 @@ def test_update_files(runner, mock_granite):
         )
 
 
-def test_error_handling(runner, mock_granite):
+def test_error_handling(runner, mock_supersonic):
     """Test error handling in CLI"""
-    instance = mock_granite.return_value
+    instance = mock_supersonic.return_value
     instance.create_pr_from_file.side_effect = Exception("API Error")
 
     with runner.isolated_filesystem():
@@ -202,7 +202,7 @@ def test_missing_file(runner):
     assert "File not found" in result.output
 
 
-def test_update_files_read_error(runner, mock_granite):
+def test_update_files_read_error(runner, mock_supersonic):
     """Test error handling when reading files fails"""
     with runner.isolated_filesystem():
         # Create one file but reference two

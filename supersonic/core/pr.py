@@ -2,28 +2,28 @@ from typing import Optional, Union, Dict, List, Mapping
 from pathlib import Path
 import time
 
-from .config import GraniteConfig, PRConfig
+from .config import SupersonicConfig, PRConfig
 from .errors import GitHubError
 from .diff import FileDiff
 from .github import GitHubAPI
 
 
-class Granite:
-    """Main class for Granite PR operations"""
+class Supersonic:
+    """Main class for Supersonic PR operations"""
 
-    def __init__(self, config: Union[GraniteConfig, Dict, str], **kwargs):
+    def __init__(self, config: Union[SupersonicConfig, Dict, str], **kwargs):
         """
-        Initialize Granite with configuration.
+        Initialize Supersonic with configuration.
 
         Args:
-            config: Either a GraniteConfig object, dict of config values,
+            config: Either a SupersonicConfig object, dict of config values,
                    or a GitHub token string
             **kwargs: Additional configuration options
         """
         if isinstance(config, str):
-            self.config = GraniteConfig(github_token=config, **kwargs)
+            self.config = SupersonicConfig(github_token=config, **kwargs)
         elif isinstance(config, dict):
-            self.config = GraniteConfig(**config, **kwargs)
+            self.config = SupersonicConfig(**config, **kwargs)
         else:
             self.config = config
 
@@ -60,7 +60,7 @@ class Granite:
             # Generate branch name if not provided
             if branch_name is None:
                 timestamp = int(time.time())
-                branch_name = f"{self.config.app_name or 'granite'}/{timestamp}"
+                branch_name = f"{self.config.app_name or 'Supersonic'}/{timestamp}"
 
             # Create branch
             await self.github.create_branch(

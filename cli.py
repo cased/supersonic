@@ -4,8 +4,8 @@ from typing import Optional, List, Tuple
 import asyncio
 import re
 
-from supersonic import Granite
-from supersonic.core.config import GraniteConfig
+from supersonic import Supersonic
+from supersonic.core.config import SupersonicConfig
 
 
 def validate_repo(ctx, param, value):
@@ -27,9 +27,9 @@ def validate_file(ctx, param, value):
 @click.option("--token", envvar="GITHUB_TOKEN", help="GitHub token", required=True)
 @click.pass_context
 def cli(ctx: click.Context, token: str) -> None:
-    """Granite - Rock-solid GitHub PR automation"""
+    """Supersonic - GitHub PR automation"""
     ctx.ensure_object(dict)
-    ctx.obj = GraniteConfig(github_token=token)
+    ctx.obj = SupersonicConfig(github_token=token)
 
 
 @cli.command()
@@ -40,7 +40,7 @@ def cli(ctx: click.Context, token: str) -> None:
 @click.option("--draft", is_flag=True, help="Create as draft PR")
 @click.pass_obj
 def update(
-    config: GraniteConfig,
+    config: SupersonicConfig,
     repo: str,
     file: str,
     upstream_path: Optional[str],
@@ -49,7 +49,7 @@ def update(
 ) -> None:
     """Update a file in a repository"""
     try:
-        supersonic = Granite(config)
+        supersonic = Supersonic(config)
 
         # Use local filename if no upstream path provided
         if not upstream_path:
@@ -77,7 +77,7 @@ def update(
 @click.option("--draft", is_flag=True, help="Create as draft PR")
 @click.pass_obj
 def update_content(
-    config: GraniteConfig,
+    config: SupersonicConfig,
     repo: str,
     content: str,
     path: str,
@@ -85,7 +85,7 @@ def update_content(
     draft: bool,
 ) -> None:
     """Update a file with provided content"""
-    supersonic = Granite(config)
+    supersonic = Supersonic(config)
     url = asyncio.run(
         supersonic.create_pr_from_content(
             repo=repo,
@@ -111,7 +111,7 @@ def update_content(
 @click.option("--draft", is_flag=True, help="Create as draft PR")
 @click.pass_obj
 def update_files(
-    config: GraniteConfig,
+    config: SupersonicConfig,
     repo: str,
     file: List[Tuple[str, str]],
     title: Optional[str],
@@ -119,7 +119,7 @@ def update_files(
 ) -> None:
     """Update multiple files with provided content"""
     try:
-        supersonic = Granite(config)
+        supersonic = Supersonic(config)
 
         # Read contents of local files
         files = {}

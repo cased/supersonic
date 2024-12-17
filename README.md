@@ -31,7 +31,7 @@ Rock-solid GitHub PR automation for modern applications. Supersonic provides a h
 
 ## Why Supersonic?
 
-Modern AI and SaaS applications often need to propose changes to user repositories - whether it's AI-suggested improvements, automated documentation updates, or configuration changes. However, creating Pull Requests programmatically through the GitHub API can be complex and error-prone.
+Modern AI and SaaS applications often need to propose changes to user repositories—whether it's AI-suggested improvements, automated documentation updates, or configuration changes. However, creating Pull Requests programmatically through the GitHub API can be complex and error-prone.
 
 Supersonic solves this:
 
@@ -40,7 +40,6 @@ Supersonic solves this:
 - **Enterprise Ready**: Full support for GitHub Enterprise and custom base URLs
 - **Async by Default**: Built for high-performance services that need to handle multiple PR creations
 - **Excessively customizable**: Full control over PR creation, set draft mode, reviewers, labels, etc.
-- **Safe by Design**: Creates PRs for review rather than direct commits
 - **Best for apps, useful for scripts too**: Plug it into your SaaS app and delight your users. Or automate internal workflows.
 
 Common use cases:
@@ -61,6 +60,7 @@ uv pip install supersonic
 git clone https://github.com/cased/supersonic
 cd supersonic
 uv venv
+source .venv/bin/activate
 uv pip install -r requirements-dev.txt
 uv pip install -e .
 ```
@@ -69,8 +69,8 @@ uv pip install -e .
 
 ### Easiest Start
 
-Let's give you an idea of what Supersonic can do. 
-Say you just want to create a PR to update a file? Here's the simplest way:
+First an idea of what Supersonic can do. 
+Say you just want to create a PR to update a file—here's the simplest way:
 
 ```python
 from supersonic import Supersonic
@@ -88,9 +88,9 @@ print(f"Created PR: {pr_url}")
 ```
 
 
-supersonic will automatically create a branch, create a PR with changes to the upstream file called `hello.py`, 
-and return the PR URL. In this case, it will also automaticlaly generate a simple title and description for the PR. 
-You'll probably want more customization, so read on.
+`supersonic` will automatically create a branch, create a PR with changes to the upstream file called `hello.py`, 
+and return the PR URL. In this case, it will also automatically generate a simple title and description for the PR. 
+You'll probably want more customization, or to use files instead of strings to generate the PR—so read on.
 
 ### Update Single File
 
@@ -113,7 +113,7 @@ pr_url = await supersonic.create_pr_from_content(
 # Update a file
 pr_url = await supersonic.create_pr_from_file(
     repo="user/repo",
-    file_path="local/config.json",
+    local_file_path="local/config.json",
     upstream_path="config/settings.json",
     title="Update configuration",  # Optional
     base_branch="develop"  # Optional, customize target branch
@@ -123,7 +123,7 @@ pr_url = await supersonic.create_pr_from_file(
 ### Update Multiple Files
 
 Need to update several files at once? Maybe you're updating configuration files across multiple services,
-or generating documentation for multiple endpoints? The `update_files` method lets you batch changes together. In `files`, pass a dictionary of upstream file paths as keys and content strings as values:
+or generating documentation for multiple endpoints? The `update_files` method lets you batch changes together. In `files`, pass a dictionary of upstream file paths as keys, and content strings as values:
 
 ```python
 # Update multiple files
@@ -241,6 +241,9 @@ supersonic = Supersonic({
 ## Configuration
 
 ### Full Configuration Options
+
+You can optioanlly use a configuration dictionary when creating a `Supersonic` instance.
+Only the GitHub token is required, and there are many options.
 
 ```python
 config = {

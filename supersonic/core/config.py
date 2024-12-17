@@ -1,4 +1,3 @@
-# config.py
 from typing import Optional, List
 from pydantic import BaseModel, Field
 from enum import Enum
@@ -25,8 +24,8 @@ class PRConfig(BaseModel):
     auto_merge: bool = False
 
 
-class GraniteConfig(BaseModel):
-    """Main configuration for Granite"""
+class SupersonicConfig(BaseModel):
+    """Main configuration for Supersonic"""
 
     github_token: str
     base_url: str = "https://api.github.com"

@@ -1,14 +1,14 @@
-from granite.core.pr import Granite
-from granite.core.config import GraniteConfig, PRConfig
-from granite.core.errors import GraniteError, GitHubError, DiffError, LLMError
+from supersonic.core.pr import Supersonic
+from supersonic.core.config import SupersonicConfig, PRConfig
+from supersonic.core.errors import SupersonicError, GitHubError, DiffError, LLMError
 
 __version__ = "0.1.0"
 
 __all__ = [
-    "Granite",
-    "GraniteConfig",
+    "Supersonic",
+    "SupersonicConfig",
     "PRConfig",
-    "GraniteError",
+    "SupersonicError",
     "GitHubError",
     "DiffError",
     "LLMError",

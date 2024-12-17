@@ -1,8 +1,8 @@
 import pytest
 import pytest_asyncio
 from unittest.mock import Mock, AsyncMock, patch, PropertyMock
-from granite.core.github import GitHubAPI
-from granite.core.errors import GitHubError
+from supersonic.core.github import GitHubAPI
+from supersonic.core.errors import GitHubError
 
 
 class MockResponse:
@@ -40,7 +40,7 @@ def mock_gh_repo():
 @pytest.fixture
 def mock_gh():
     """Mock Github client"""
-    with patch("granite.core.github.Github", autospec=True) as mock_github:
+    with patch("supersonic.core.github.Github", autospec=True) as mock_github:
         yield mock_github.return_value
 
 
