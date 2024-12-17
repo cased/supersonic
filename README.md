@@ -395,6 +395,8 @@ We use:
 - `ruff` for linting
 - `mypy` for type checking
 
+All run in GitHub Actions on every PR.
+
 ## License
 
 MIT License - see [LICENSE](LICENSE) file for details.
