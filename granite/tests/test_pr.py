@@ -65,7 +65,7 @@ async def test_create_pr_from_file(mock_github, tmp_path):
     
     pr_url = await granite.create_pr_from_file(
         repo="test/repo",
-        file_path=str(test_file),
+        local_file_path=str(test_file),
         upstream_path="src/test.py"
     )
     
@@ -84,7 +84,7 @@ async def test_create_pr_from_file_not_found(mock_github):
     with pytest.raises(GitHubError, match="Failed to update file"):
         await granite.create_pr_from_file(
             repo="test/repo",
-            file_path="nonexistent.py",
+            local_file_path="nonexistent.py",
             upstream_path="test.py"
         )
 
