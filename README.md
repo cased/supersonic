@@ -31,7 +31,7 @@ Rock-solid GitHub PR automation for modern applications. Granite provides a high
 
 ## Why Granite?
 
-Modern AI and SaaS applications often need to propose changes to user repositories - whether it's AI-suggested improvements, automated documentation updates, or configuration changes. However, creating Pull Requests programmatically through the GitHub API can be complex and error-prone.
+Modern AI and SaaS applications often need to propose changes to user repositories—whether it's AI-suggested improvements, automated documentation updates, or configuration changes. However, creating Pull Requests programmatically through the GitHub API can be complex and error-prone.
 
 Granite solves this:
 
@@ -68,8 +68,8 @@ uv pip install -e .
 
 ### Easiest Start
 
-Let's give you an idea of what Granite can do. 
-Say you just want to create a PR to update a file? Here's the simplest way:
+First an idea of what Granite can do. 
+Say you just want to create a PR to update a file—here's the simplest way:
 
 ```python
 from granite import Granite
@@ -87,9 +87,9 @@ print(f"Created PR: {pr_url}")
 ```
 
 
-granite will automatically create a branch, create a PR with changes to the upstream file called `hello.py`, 
-and return the PR URL. In this case, it will also automaticlaly generate a simple title and description for the PR. 
-You'll probably want more customization, so read on.
+`granite` will automatically create a branch, create a PR with changes to the upstream file called `hello.py`, 
+and return the PR URL. In this case, it will also automatically generate a simple title and description for the PR. 
+You'll probably want more customization, or to use files instead of strings to generate the PR—so read on.
 
 ### Update Single File
 
@@ -122,7 +122,7 @@ pr_url = await granite.create_pr_from_file(
 ### Update Multiple Files
 
 Need to update several files at once? Maybe you're updating configuration files across multiple services,
-or generating documentation for multiple endpoints? The `update_files` method lets you batch changes together. In `files`, pass a dictionary of upstream file paths as keys and content strings as values:
+or generating documentation for multiple endpoints? The `update_files` method lets you batch changes together. In `files`, pass a dictionary of upstream file paths as keys, and content strings as values:
 
 ```python
 # Update multiple files
