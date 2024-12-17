@@ -1,0 +1,18 @@
+{
+    "github_token": "your-token",
+    "app_name": "your-app",
+    "base_url": "https://github.company.com/api/v3", 
+    "llm": {
+        "provider": "anthropic",
+        "api_key": "your-anthropic-key",
+        "model": "claude-3-opus-20240229"
+    },
+    "default_pr_config": {
+        "base_branch": "main",
+        "draft": false,
+        "labels": ["automated"],
+        "auto_merge": false,
+        "merge_strategy": "squash",
+        "delete_branch_on_merge": true
+    }
+}

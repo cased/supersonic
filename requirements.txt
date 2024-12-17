@@ -1,0 +1,8 @@
+PyGithub
+pydantic>=2.0.0
+gitpython
+anthropic
+openai
+aiohttp
+click
+jinja2
