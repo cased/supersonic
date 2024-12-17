@@ -112,7 +112,7 @@ pr_url = await granite.create_pr_from_content(
 # Update a file
 pr_url = await granite.create_pr_from_file(
     repo="user/repo",
-    file_path="local/config.json",
+    local_file_path="local/config.json",
     upstream_path="config/settings.json",
     title="Update configuration",  # Optional
     base_branch="develop"  # Optional, customize target branch
