@@ -1,10 +1,10 @@
-# Granite
+# Supersonic
 
-Rock-solid GitHub PR automation for modern applications. Granite provides a high-level API for programmatically creating and managing Pull Requests, designed specifically for AI and SaaS applications that need to propose changes to user repositories.
+Rock-solid GitHub PR automation for modern applications. Supersonic provides a high-level API for programmatically creating and managing Pull Requests, designed specifically for AI and SaaS applications that need to propose changes to user repositories.
 
 ## Table of Contents
 
-- [Why Granite?](#why-granite)
+- [Why Supersonic?](#why-supersonic)
 - [Features](#features)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
@@ -29,11 +29,11 @@ Rock-solid GitHub PR automation for modern applications. Granite provides a high
 - [License](#license)
 
 
-## Why Granite?
+## Why Supersonic?
 
 Modern AI and SaaS applications often need to propose changes to user repositories - whether it's AI-suggested improvements, automated documentation updates, or configuration changes. However, creating Pull Requests programmatically through the GitHub API can be complex and error-prone.
 
-Granite solves this:
+Supersonic solves this:
 
 - **Simple, High-Level API**: Create PRs with a single function call, using files or plain text content
 - **Safe Defaults**: All changes are created as PRs, allowing users to review before merging
@@ -55,11 +55,11 @@ We use this at [Cased](https://cased.com) to support our DevOps automations.
 
 ```bash
 # Using pip with uv (recommended)
-uv pip install granite
+uv pip install supersonic
 
 # Development installation
-git clone https://github.com/cased/granite
-cd granite
+git clone https://github.com/cased/supersonic
+cd supersonic
 uv venv
 uv pip install -r requirements-dev.txt
 uv pip install -e .
@@ -69,16 +69,16 @@ uv pip install -e .
 
 ### Easiest Start
 
-Let's give you an idea of what Granite can do. 
+Let's give you an idea of what Supersonic can do. 
 Say you just want to create a PR to update a file? Here's the simplest way:
 
 ```python
-from granite import Granite
+from supersonic import Supersonic
 
-granite = Granite("your-github-token")
+supersonic = Supersonic("your-github-token")
 
 # Create a PR to update a file
-pr_url = await granite.create_pr_from_content(
+pr_url = await supersonic.create_pr_from_content(
     repo="user/repo",
     content="print('hello world')",
     path="hello.py"
@@ -88,7 +88,7 @@ print(f"Created PR: {pr_url}")
 ```
 
 
-granite will automatically create a branch, create a PR with changes to the upstream file called `hello.py`, 
+supersonic will automatically create a branch, create a PR with changes to the upstream file called `hello.py`, 
 and return the PR URL. In this case, it will also automaticlaly generate a simple title and description for the PR. 
 You'll probably want more customization, so read on.
 
@@ -99,7 +99,7 @@ or point to a local file that contains the changes:
 
 ```python
 # Update with content directly
-pr_url = await granite.create_pr_from_content(
+pr_url = await supersonic.create_pr_from_content(
     repo="user/repo",
     content="print('hello')",
     path="src/hello.py",
@@ -111,7 +111,7 @@ pr_url = await granite.create_pr_from_content(
 )
 
 # Update a file
-pr_url = await granite.create_pr_from_file(
+pr_url = await supersonic.create_pr_from_file(
     repo="user/repo",
     file_path="local/config.json",
     upstream_path="config/settings.json",
@@ -127,7 +127,7 @@ or generating documentation for multiple endpoints? The `update_files` method le
 
 ```python
 # Update multiple files
-pr_url = await granite.create_pr_from_files(
+pr_url = await supersonic.create_pr_from_files(
     repo="user/repo",
     files={
         "config/settings.json": '{"debug": true}',
@@ -151,18 +151,18 @@ This is great for scripts or when you want to quickly create PRs without writing
 
 ```bash
 # Update file with content directly
-granite --token ghp_xxx update-content user/repo "print('hello')" src/hello.py \
+supersonic --token ghp_xxx update-content user/repo "print('hello')" src/hello.py \
   --title "Add hello script" \
   --description "Adds a hello world script" \
   --reviewers username1,username2
 
 # Update a single file
-granite --token ghp_xxx update user/repo config.json config/settings.json \
+supersonic --token ghp_xxx update user/repo config.json config/settings.json \
   --title "Update configuration" \
   --labels config,automated
 
 # Update multiple files
-granite --token ghp_xxx update-files user/repo \
+supersonic --token ghp_xxx update-files user/repo \
   -f '{"debug": true}' config/settings.json \
   -f "# Title" README.md \
   --title "Update configs and docs" \
@@ -175,7 +175,7 @@ granite --token ghp_xxx update-files user/repo \
 
 ```python
 # Configure PR options as keyword arguments
-pr_url = await granite.update_content(
+pr_url = await supersonic.update_content(
     repo="user/repo",
     content="print('hello')",
     path="src/hello.py",
@@ -193,7 +193,7 @@ pr_url = await granite.update_content(
 For more control and reusability, use the PRConfig class:
 
 ```python
-from granite import PRConfig
+from supersonic import PRConfig
 
 config = PRConfig(
     title="Update configuration",  # Optional, defaults to "Automated changes"
@@ -214,7 +214,7 @@ config = PRConfig(
     auto_merge=False
 )
 
-pr_url = await granite.create_pr(
+pr_url = await supersonic.create_pr(
     repo="user/repo",
     changes={"config.json": new_config_content},
     config=config
@@ -224,7 +224,7 @@ pr_url = await granite.create_pr(
 ### Enterprise Usage
 
 ```python
-granite = Granite({
+supersonic = Supersonic({
     "github_token": "your-token",
     "base_url": "https://github.your-company.com/api/v3",
     "app_name": "your-tool",
@@ -254,7 +254,7 @@ config = {
     # Default PR Configuration
     "default_pr_config": {
         "title": "Automated Update",  # Optional
-        "description": "Changes proposed by Granite",  # Optional
+        "description": "Changes proposed by Supersonic",  # Optional
         "base_branch": "main",
         "draft": False,
         "labels": ["automated"],
@@ -266,19 +266,19 @@ config = {
     }
 }
 
-granite = Granite(config)
+supersonic = Supersonic(config)
 ```
 
 ### Environment Variables
 
-Granite looks for these environment variables:
+Supersonic looks for these environment variables:
 - `GITHUB_TOKEN`: GitHub API token
 
 ## Use Cases
 
 ### AI-Powered Code Improvements
 
-Perfect for AI applications that suggest code improvements. Granite makes it easy to turn AI suggestions into pull requests:
+Perfect for AI applications that suggest code improvements. Supersonic makes it easy to turn AI suggestions into pull requests:
 
 ```python
 async def handle_improvement_request(repo: str, file_path: str, user_prompt: str):
@@ -286,8 +286,8 @@ async def handle_improvement_request(repo: str, file_path: str, user_prompt: str
     improved_code = await ai.improve_code(user_prompt)
     
     # Create PR with improvements
-    granite = Granite(config)
-    pr_url = await granite.update_content(
+    supersonic = Supersonic(config)
+    pr_url = await supersonic.update_content(
         repo=repo,
         content=improved_code,
         path=file_path,
@@ -317,8 +317,8 @@ async def update_api_docs(repo: str, api_changes: Dict[str, Any]):
     }
     
     # Create PR with all doc updates
-    granite = Granite(config)
-    pr_url = await granite.update_files(
+    supersonic = Supersonic(config)
+    pr_url = await supersonic.update_files(
         repo=repo,
         files=docs,
         title="Update API documentation",
@@ -343,8 +343,8 @@ async def update_customer_config(customer_id: str, new_settings: Dict):
     repo = f"customers/{customer_id}/config"
     config_json = json.dumps(new_settings, indent=2)
     
-    granite = Granite(config)
-    pr_url = await granite.update_content(
+    supersonic = Supersonic(config)
+    pr_url = await supersonic.update_content(
         repo=repo,
         content=config_json,
         path="settings.json",
@@ -369,8 +369,8 @@ async def update_customer_config(customer_id: str, new_settings: Dict):
 
 ```bash
 # Clone repository
-git clone https://github.com/cased/granite
-cd granite
+git clone https://github.com/cased/supersonic
+cd supersonic
 
 # Create a new virtual environment
 uv venv

@@ -4,8 +4,8 @@ from typing import Optional, List, Tuple
 import asyncio
 import re
 
-from granite import Granite
-from granite.core.config import GraniteConfig
+from supersonic import Granite
+from supersonic.core.config import GraniteConfig
 
 
 def validate_repo(ctx, param, value):
@@ -49,14 +49,14 @@ def update(
 ) -> None:
     """Update a file in a repository"""
     try:
-        granite = Granite(config)
+        supersonic = Granite(config)
 
         # Use local filename if no upstream path provided
         if not upstream_path:
             upstream_path = Path(file).name
 
         url = asyncio.run(
-            granite.create_pr_from_file(
+            supersonic.create_pr_from_file(
                 repo=repo,
                 local_file_path=file,
                 upstream_path=upstream_path,
@@ -85,9 +85,9 @@ def update_content(
     draft: bool,
 ) -> None:
     """Update a file with provided content"""
-    granite = Granite(config)
+    supersonic = Granite(config)
     url = asyncio.run(
-        granite.create_pr_from_content(
+        supersonic.create_pr_from_content(
             repo=repo,
             content=content,
             path=path,
@@ -119,7 +119,7 @@ def update_files(
 ) -> None:
     """Update multiple files with provided content"""
     try:
-        granite = Granite(config)
+        supersonic = Granite(config)
 
         # Read contents of local files
         files = {}
@@ -131,7 +131,7 @@ def update_files(
                 raise click.BadParameter(f"Failed to read file {local_path}: {e}")
 
         url = asyncio.run(
-            granite.create_pr_from_files(
+            supersonic.create_pr_from_files(
                 repo=repo, files=files, title=title, draft=draft
             )
         )
