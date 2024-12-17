@@ -35,11 +35,12 @@ Modern AI and SaaS applications often need to propose changes to user repositori
 
 Granite solves this by providing:
 
-- **Simple, High-Level API**: Create PRs with a single function call, whether you have diffs, file content, or local changes
+- **Simple, High-Level API**: Create PRs with a single function call, using files or plain text content
 - **Safe Defaults**: All changes are created as PRs, allowing users to review before merging
 - **Enterprise Ready**: Full support for GitHub Enterprise and custom base URLs
 - **Async by Default**: Built for high-performance services that need to handle multiple PR creations
 - **Excessively customizable**: Full control over PR creation, set draft mode, reviewers, labels, etc.
+- **Best for apps, useful for scripts too**: Plug it into your SaaS app and delight your users. Or automate internal workflows.
 
 Common use cases:
 - AI applications suggesting code improvements
