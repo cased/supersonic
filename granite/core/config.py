@@ -3,13 +3,16 @@ from typing import Optional, List
 from pydantic import BaseModel, Field
 from enum import Enum
 
+
 class MergeStrategy(str, Enum):
     MERGE = "merge"
     SQUASH = "squash"
     REBASE = "rebase"
 
+
 class PRConfig(BaseModel):
     """Configuration for Pull Request creation"""
+
     title: str = "Automated changes"
     description: Optional[str] = None
     base_branch: str = "main"
@@ -21,8 +24,10 @@ class PRConfig(BaseModel):
     delete_branch_on_merge: bool = True
     auto_merge: bool = False
 
+
 class GraniteConfig(BaseModel):
     """Main configuration for Granite"""
+
     github_token: str
     base_url: str = "https://api.github.com"
     app_name: Optional[str] = None

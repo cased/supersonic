@@ -40,6 +40,7 @@ Granite solves this:
 - **Enterprise Ready**: Full support for GitHub Enterprise and custom base URLs
 - **Async by Default**: Built for high-performance services that need to handle multiple PR creations
 - **Excessively customizable**: Full control over PR creation, set draft mode, reviewers, labels, etc.
+- **Safe by Design**: Creates PRs for review rather than direct commits
 - **Best for apps, useful for scripts too**: Plug it into your SaaS app and delight your users. Or automate internal workflows.
 
 Common use cases:
@@ -50,14 +51,6 @@ Common use cases:
 
 We use this at [Cased](https://cased.com) to support our DevOps automations.
 
-## Features
-
-- 📝 **Smart Defaults**: Auto-generates PR titles and descriptions from changes
-- 🚀 **Async by Default**: Built for high-performance automation
-- 🏢 **Enterprise Ready**: Full support for GitHub Enterprise
-- 🔒 **Safe by Design**: Creates PRs for review rather than direct commits
-- 🎯 **Purpose-Built**: Designed specifically for services that need to propose changes to user repos
-
 ## Installation
 
 ```bash
@@ -67,6 +60,7 @@ uv pip install granite
 # Development installation
 git clone https://github.com/cased/granite
 cd granite
+uv venv
 uv pip install -r requirements-dev.txt
 uv pip install -e .
 ```
@@ -392,8 +386,7 @@ uv run pytest
 ### Code Style
 
 We use:
-- `black` for code formatting
-- `ruff` for linting
+- `ruff` for linting and formatting
 - `mypy` for type checking
 
 All run in GitHub Actions on every PR.
