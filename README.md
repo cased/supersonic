@@ -241,6 +241,9 @@ granite = Granite({
 
 ### Full Configuration Options
 
+You can use a configuration dictionary when creating a `Granite` instance.
+Only the GitHub token is required, and there are many options.
+
 ```python
 config = {
     # Required
