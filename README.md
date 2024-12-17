@@ -70,6 +70,7 @@ uv pip install -e .
 ### Easiest Start
 
 First an idea of what Supersonic can do. 
+
 Say you just want to create a PR to update a file—here's the simplest way:
 
 ```python
@@ -242,7 +243,7 @@ supersonic = Supersonic({
 
 ### Full Configuration Options
 
-You can optioanlly use a configuration dictionary when creating a `Supersonic` instance.
+You can optionally use a configuration dictionary when creating a `Supersonic` instance.
 Only the GitHub token is required, and there are many options.
 
 ```python
