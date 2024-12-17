@@ -33,7 +33,7 @@ Rock-solid GitHub PR automation for modern applications. Granite provides a high
 
 Modern AI and SaaS applications often need to propose changes to user repositories - whether it's AI-suggested improvements, automated documentation updates, or configuration changes. However, creating Pull Requests programmatically through the GitHub API can be complex and error-prone.
 
-Granite solves this by providing:
+Granite solves this:
 
 - **Simple, High-Level API**: Create PRs with a single function call, using files or plain text content
 - **Safe Defaults**: All changes are created as PRs, allowing users to review before merging
