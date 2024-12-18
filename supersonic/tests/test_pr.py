@@ -155,7 +155,7 @@ async def test_create_pr_from_file_with_branch_name(mock_github, tmp_path):
     branch_name = "feature/custom-branch"
     pr_url = await supersonic.create_pr_from_file(
         repo="test/repo",
-        file_path=str(test_file),
+        local_file_path=str(test_file),
         upstream_path="src/test.py",
         branch_name=branch_name,
     )
