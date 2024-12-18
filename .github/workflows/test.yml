@@ -37,8 +37,8 @@ jobs:
 
     - name: Type check with mypy
       run: |
-        mypy cli.py supersonic/tests/test_cli.py
+        mypy .
 
     - name: Run tests
       run: |
-        pytest supersonic/tests/test_cli.py -v
+        pytest . -v
