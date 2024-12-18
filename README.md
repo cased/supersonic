@@ -95,8 +95,8 @@ You'll probably want more customization, or to use files instead of strings to g
 
 ### Update Single File
 
-Sometimes you just want to update a single file and create a PR for it. You can either provide the content directly as a string, 
-or point to a local file that contains the changes:
+There are two ways to update a single file and create a PR for it. You can either provide the content directly as a string, 
+or point to a local file that contains the new code:
 
 ```python
 # Update with content directly
