@@ -94,7 +94,8 @@ print(f"Created PR: {pr_url}")
 
 ### Working with Files and Content
 
-Supersonic provides four main ways to create PRs, each designed for different use cases:
+Supersonic provides four main ways to create PRs, each designed for different use cases.
+You can customize everything with keyword arguments, demonstrated below.
 
 #### 1. Single File Updates (`create_pr_from_file`)
 
@@ -158,7 +159,7 @@ pr_url = my_supersonic.create_pr_from_multiple_contents(
     2. Refreshed documentation
     """,  # Optional
     labels=["config", "docs"],  # Optional
-    reviewers=["tech-lead", "docs-team"]  # Optional
+    reviewers=["your-tech-lead", "somebody-else"]  # Optional
 )
 ```
 
@@ -170,7 +171,7 @@ Great for:
 
 #### 4. Multiple File Updates (`create_pr_from_files`)
 
-Use you have multiple local files to propose as changes.
+Use if you have multiple local files to propose as changes.
 You use `files` here, which is a dictionary mapping local file paths
 to your desired upstream file paths.
 
@@ -186,7 +187,7 @@ pr_url = my_supersonic.create_pr_from_files(
 )
 ```
 
-Perfect for:
+Use for:
 - Bulk file uploads
 - Multi-file configuration changes
 - Documentation updates from local files
