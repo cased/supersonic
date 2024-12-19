@@ -143,25 +143,30 @@ class Supersonic:
         except Exception as e:
             raise GitHubError(f"Failed to update file: {e}")
 
-    def create_pr_from_files(
-        self, repo: str, files: Mapping[str, str], **kwargs
+    def create_pr_from_multiple_contents(
+        self,
+        repo: str,
+        contents: Mapping[str, str],  # Changed from Dict to Mapping
+        title: Optional[str] = None,
+        **kwargs,
     ) -> str:
         """
         Create a PR to update multiple files with provided content.
 
         Args:
             repo: Repository name (owner/repo)
-            files: Dict mapping file paths to their content
-                  e.g. {"path/to/file.py": "print('hello')",
-                       "docs/README.md": "# Title"}
-            **kwargs: Additional PR options (title, draft, etc)
+            contents: Dict mapping file paths to their content
+                    e.g. {"path/to/file.py": "print('hello')",
+                         "docs/README.md": "# Title"}
+            title: PR title
+            **kwargs: Additional PR options (draft, labels, etc)
 
         Returns:
             URL of the created PR
         """
         try:
-            # Convert Mapping to Dict[str, Optional[str]] for create_pr
-            changes: Dict[str, Optional[str]] = {k: v for k, v in files.items()}
+            # Convert to Dict[str, Optional[str]] for create_pr
+            changes: Dict[str, Optional[str]] = {k: v for k, v in contents.items()}
             return self.create_pr(repo=repo, changes=changes, config=kwargs)
         except Exception as e:
             raise GitHubError(f"Failed to update files: {e}")
@@ -187,3 +192,37 @@ class Supersonic:
             )
         except Exception as e:
             raise GitHubError(f"Failed to update content: {e}")
+
+    def create_pr_from_files(
+        self,
+        repo: str,
+        files: Mapping[str, str],  # Changed from Dict to Mapping
+        **kwargs,
+    ) -> str:
+        """
+        Create a PR to update multiple files from local files.
+
+        Args:
+            repo: Repository name (owner/repo)
+            files: Dict mapping local file paths to their upstream paths
+                   e.g. {"local/config.json": "config/settings.json",
+                        "docs/local.md": "docs/README.md"}
+            **kwargs: Additional PR options (title, draft, etc)
+
+        Returns:
+            URL of the created PR
+        """
+        try:
+            # Read all local files
+            contents: Dict[str, Optional[str]] = {}
+            for local_path, upstream_path in files.items():
+                try:
+                    content = Path(local_path).read_text()
+                    contents[upstream_path] = content
+                except Exception as e:
+                    raise GitHubError(f"Failed to read file {local_path}: {e}")
+
+            # Create PR with all file contents
+            return self.create_pr(repo=repo, changes=contents, config=kwargs)
+        except Exception as e:
+            raise GitHubError(f"Failed to update files: {e}")
