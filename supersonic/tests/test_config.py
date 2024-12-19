@@ -163,7 +163,7 @@ def test_custom_pr_config():
 
 def test_supersonic_config_from_token():
     """Test creating config from token string"""
-    config = SupersonicConfig("test-token")
+    config = SupersonicConfig(github_token="test-token")
     assert config.github_token == "test-token"
     assert config.base_url == "https://api.github.com"
     assert config.app_name is None

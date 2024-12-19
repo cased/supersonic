@@ -10,7 +10,7 @@ def mock_github():
     """Mock GitHub API"""
     with patch("supersonic.core.pr.GitHubAPI") as mock:
         instance = mock.return_value
-        instance.create_pr.return_value = "https://github.com/test/pr/1"
+        instance.create_pull_request.return_value = "https://github.com/test/pr/1"
         yield instance
 
 

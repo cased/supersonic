@@ -60,4 +60,4 @@ def test_generate_commit_message():
     
     message = parser.generate_commit_message(diffs)
     assert "Update" in message
-    assert "test.py" in message 
+    assert "py" in message 

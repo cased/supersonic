@@ -176,19 +176,20 @@ def test_enable_auto_merge(github_api, mock_gh_repo):
     """Test enabling auto-merge"""
     mock_pr = Mock()
     mock_gh_repo.get_pull.return_value = mock_pr
+    mock_pr.enable_automerge = Mock()
 
     github_api.enable_auto_merge(
         repo="owner/repo", pr_number=1, merge_method="squash"
     )
 
-    mock_pr.enable_auto_merge.assert_called_with(merge_method="squash")
+    mock_pr.enable_automerge.assert_called_with(merge_method="squash")
 
 
 def test_enable_auto_merge_error(github_api, mock_gh_repo):
     """Test enabling auto-merge with error response"""
     mock_pr = Mock()
     mock_gh_repo.get_pull.return_value = mock_pr
-    mock_pr.enable_auto_merge.side_effect = Exception("Auto-merge not allowed")
+    mock_pr.enable_automerge.side_effect = Exception("Auto-merge not allowed")
 
     with pytest.raises(GitHubError, match="Failed to enable auto-merge"):
         github_api.enable_auto_merge(
