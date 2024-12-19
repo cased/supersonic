@@ -7,6 +7,10 @@ name = "supersonic"
 version = "0.1.0"
 description = "GitHub PR automation for modern applications"
 readme = "README.md"
+license = "MIT"
+authors = [
+    { name = "Cased", email = "ted@cased.com" }
+]
 requires-python = ">=3.9"
 dependencies = [
     "pydantic>=2.0.0",
