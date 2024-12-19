@@ -188,7 +188,7 @@ pr_url = my_supersonic.create_pr_from_files(
 ```
 
 Use for:
-- Bulk file uploads
+- Bulk file uploads and updates
 - Multi-file configuration changes
 - Documentation updates from local files
 - Any scenario where you have multiple local files to propose
@@ -418,14 +418,6 @@ uv pip install -e .
 # Run tests
 uv run pytest
 ```
-
-### Code Style
-
-We use:
-- `ruff` for linting and formatting
-- `mypy` for type checking
-
-All run in GitHub Actions on every PR.
 
 ## License
 
