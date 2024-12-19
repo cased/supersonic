@@ -347,9 +347,9 @@ Keep documentation in sync with code changes:
 def update_api_docs(repo: str, api_changes: Dict[str, Any]):
     # Generate updated docs
     docs = {
-        "docs/api/endpoints.md": generate_endpoint_docs(api_changes),
-        "docs/api/types.md": generate_type_docs(api_changes),
-        "README.md": update_quickstart(api_changes)
+        "docs/api/endpoints.md": your_app.generate_endpoint_docs(api_changes),
+        "docs/api/types.md": your_app.generate_type_docs(api_changes),
+        "README.md": your_app.update_quickstart(api_changes)
     }
     
     # Create PR with all doc updates
