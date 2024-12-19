@@ -39,22 +39,20 @@ def test_create_pr_from_file(supersonic, tmp_path):
         upstream_path="docs/test.txt",
         title="Update doc",
         base_branch="develop",
-        labels=["documentation"]
+        labels=["documentation"],
     )
 
     assert url == "https://github.com/test/pr/1"
-    
+
     supersonic.github.create_branch.assert_called_once_with(
-        repo="owner/repo",
-        branch=ANY,
-        base_branch="develop"
+        repo="owner/repo", branch=ANY, base_branch="develop"
     )
     supersonic.github.update_file.assert_called_once_with(
         repo="owner/repo",
         path="docs/test.txt",
         content="test content",
         message="Update docs/test.txt",
-        branch=ANY
+        branch=ANY,
     )
     supersonic.github.create_pull_request.assert_called_once_with(
         repo="owner/repo",
@@ -62,7 +60,7 @@ def test_create_pr_from_file(supersonic, tmp_path):
         body="",
         head=ANY,
         base="develop",
-        draft=False
+        draft=False,
     )
     supersonic.github.add_labels.assert_called_once_with(
         "owner/repo", 1, ["documentation"]
@@ -80,15 +78,13 @@ def test_create_pr_from_content_with_kwargs(supersonic):
         base_branch="develop",
         draft=True,
         labels=["test"],
-        reviewers=["reviewer1"]
+        reviewers=["reviewer1"],
     )
 
     assert url == "https://github.com/test/pr/1"
-    
+
     supersonic.github.create_branch.assert_called_once_with(
-        repo="owner/repo",
-        branch=ANY,
-        base_branch="develop"
+        repo="owner/repo", branch=ANY, base_branch="develop"
     )
     supersonic.github.create_pull_request.assert_called_once_with(
         repo="owner/repo",
@@ -96,11 +92,9 @@ def test_create_pr_from_content_with_kwargs(supersonic):
         body="Adding a test file",
         head=ANY,
         base="develop",
-        draft=True
+        draft=True,
     )
-    supersonic.github.add_labels.assert_called_once_with(
-        "owner/repo", 1, ["test"]
-    )
+    supersonic.github.add_labels.assert_called_once_with("owner/repo", 1, ["test"])
     supersonic.github.add_reviewers.assert_called_once_with(
         "owner/repo", 1, ["reviewer1"]
     )
@@ -117,30 +111,28 @@ def test_create_pr_from_multiple_contents(supersonic):
         repo="owner/repo",
         contents=contents,
         title="Multiple updates",
-        base_branch="develop"
+        base_branch="develop",
     )
 
     assert url == "https://github.com/test/pr/1"
-    
+
     supersonic.github.create_branch.assert_called_once_with(
-        repo="owner/repo",
-        branch=ANY,
-        base_branch="develop"
+        repo="owner/repo", branch=ANY, base_branch="develop"
     )
 
     # Verify two file updates occurred
     assert supersonic.github.update_file.call_count == 2
     calls = supersonic.github.update_file.call_args_list
     assert any(
-        call.kwargs["path"] == "test1.txt" and 
-        call.kwargs["content"] == "content 1" and
-        call.kwargs["repo"] == "owner/repo"
+        call.kwargs["path"] == "test1.txt"
+        and call.kwargs["content"] == "content 1"
+        and call.kwargs["repo"] == "owner/repo"
         for call in calls
     )
     assert any(
-        call.kwargs["path"] == "test2.txt" and 
-        call.kwargs["content"] == "content 2" and
-        call.kwargs["repo"] == "owner/repo"
+        call.kwargs["path"] == "test2.txt"
+        and call.kwargs["content"] == "content 2"
+        and call.kwargs["repo"] == "owner/repo"
         for call in calls
     )
 
@@ -155,21 +147,17 @@ def test_create_pr_using_config_object(supersonic):
         labels=["feature"],
         reviewers=["reviewer1"],
         auto_merge=True,
-        merge_strategy="squash"
+        merge_strategy="squash",
     )
 
     url = supersonic.create_pr(
-        repo="owner/repo",
-        changes={"test.txt": "test content"},
-        config=config
+        repo="owner/repo", changes={"test.txt": "test content"}, config=config
     )
 
     assert url == "https://github.com/test/pr/1"
-    
+
     supersonic.github.create_branch.assert_called_once_with(
-        repo="owner/repo",
-        branch=ANY,
-        base_branch="develop"
+        repo="owner/repo", branch=ANY, base_branch="develop"
     )
     supersonic.github.create_pull_request.assert_called_once_with(
         repo="owner/repo",
@@ -177,34 +165,29 @@ def test_create_pr_using_config_object(supersonic):
         body="Test description",
         head=ANY,
         base="develop",
-        draft=True
+        draft=True,
     )
-    supersonic.github.add_labels.assert_called_once_with(
-        "owner/repo", 1, ["feature"]
-    )
+    supersonic.github.add_labels.assert_called_once_with("owner/repo", 1, ["feature"])
     supersonic.github.add_reviewers.assert_called_once_with(
         "owner/repo", 1, ["reviewer1"]
     )
     supersonic.github.enable_auto_merge.assert_called_once_with(
-        repo="owner/repo",
-        pr_number=1,
-        merge_method="squash"
+        repo="owner/repo", pr_number=1, merge_method="squash"
     )
 
 
 def test_create_pr_mixing_config_and_kwargs(supersonic):
     """Test that mixing PRConfig and kwargs raises error"""
-    config = PRConfig(
-        title="Original Title", 
-        base_branch="main"
-    )
-    
-    with pytest.raises(ValueError, match="Cannot provide both PRConfig and keyword arguments"):
+    config = PRConfig(title="Original Title", base_branch="main")
+
+    with pytest.raises(
+        ValueError, match="Cannot provide both PRConfig and keyword arguments"
+    ):
         supersonic.create_pr(
             repo="owner/repo",
             changes={"test.txt": "content"},
             config=config,
-            title="New Title"  # Attempting to mix with kwargs
+            title="New Title",  # Attempting to mix with kwargs
         )
 
 
@@ -215,13 +198,11 @@ def test_create_pr_using_dict_config(supersonic):
         "description": "Created from dict",
         "base_branch": "develop",
         "labels": ["test"],
-        "reviewers": ["reviewer1"]
+        "reviewers": ["reviewer1"],
     }
 
     url = supersonic.create_pr(
-        repo="owner/repo",
-        changes={"test.txt": "content"},
-        config=config
+        repo="owner/repo", changes={"test.txt": "content"}, config=config
     )
 
     assert url == "https://github.com/test/pr/1"
@@ -231,11 +212,9 @@ def test_create_pr_using_dict_config(supersonic):
         body="Created from dict",
         head=ANY,
         base="develop",
-        draft=False
+        draft=False,
     )
-    supersonic.github.add_labels.assert_called_once_with(
-        "owner/repo", 1, ["test"]
-    )
+    supersonic.github.add_labels.assert_called_once_with("owner/repo", 1, ["test"])
 
 
 def test_create_pr_kwargs_ordering(supersonic):
@@ -246,7 +225,7 @@ def test_create_pr_kwargs_ordering(supersonic):
         path="test.txt",
         title="Test",
         labels=["bug"],
-        base_branch="develop"
+        base_branch="develop",
     )
 
     # Reset mock
@@ -259,42 +238,30 @@ def test_create_pr_kwargs_ordering(supersonic):
         title="Test",
         repo="owner/repo",
         path="test.txt",
-        content="test content"
+        content="test content",
     )
 
     assert url1 == url2
     supersonic.github.create_pull_request.assert_called_once_with(
-        repo="owner/repo",
-        title="Test",
-        body="",
-        head=ANY,
-        base="develop",
-        draft=False
+        repo="owner/repo", title="Test", body="", head=ANY, base="develop", draft=False
     )
 
 
 def test_create_pr_defaults(supersonic):
     """Test that default config values are used when not specified"""
     url = supersonic.create_pr_from_content(
-        repo="owner/repo",
-        content="test content",
-        path="test.txt"
+        repo="owner/repo", content="test content", path="test.txt"
     )
 
     assert url == "https://github.com/test/pr/1"
-    
+
     supersonic.github.create_branch.assert_called_once_with(
         repo="owner/repo",
         branch=ANY,
-        base_branch="main"  # Default base branch
+        base_branch="main",  # Default base branch
     )
     supersonic.github.create_pull_request.assert_called_once_with(
-        repo="owner/repo",
-        title=ANY,
-        body="",
-        head=ANY,
-        base="main",
-        draft=False
+        repo="owner/repo", title=ANY, body="", head=ANY, base="main", draft=False
     )
 
 
@@ -305,7 +272,7 @@ def test_create_pr_empty_lists(supersonic):
         content="test content",
         path="test.txt",
         labels=[],
-        reviewers=[]
+        reviewers=[],
     )
 
     assert url == "https://github.com/test/pr/1"
@@ -332,15 +299,10 @@ def test_create_pr_unknown_kwargs(supersonic):
         path="test.txt",
         title="Test",
         unknown_param="value",  # Should be ignored
-        another_unknown=123     # Should be ignored
+        another_unknown=123,  # Should be ignored
     )
 
     assert url == "https://github.com/test/pr/1"
     supersonic.github.create_pull_request.assert_called_once_with(
-        repo="owner/repo",
-        title="Test",
-        body="",
-        head=ANY,
-        base="main",
-        draft=False
+        repo="owner/repo", title="Test", body="", head=ANY, base="main", draft=False
     )

@@ -29,9 +29,7 @@ class Supersonic:
         self.github = GitHubAPI(self.config.github_token, self.config.base_url)
 
     def _prepare_pr_config(
-        self, 
-        pr_config: Optional[Union[PRConfig, Dict]] = None, 
-        **kwargs
+        self, pr_config: Optional[Union[PRConfig, Dict]] = None, **kwargs
     ) -> PRConfig:
         """
         Prepares PR configuration, either from a PRConfig/dict or from kwargs.
@@ -49,15 +47,17 @@ class Supersonic:
         """
         if pr_config is not None:
             if kwargs:
-                raise ValueError("Cannot provide both PRConfig and keyword arguments. Choose one approach.")
+                raise ValueError(
+                    "Cannot provide both PRConfig and keyword arguments. Choose one approach."
+                )
             if isinstance(pr_config, dict):
                 return PRConfig(**pr_config)
             return pr_config
-            
+
         # If kwargs are provided, create PRConfig from them
         if kwargs:
             return PRConfig(**kwargs)
-            
+
         # If neither is provided, use defaults
         return self.config.default_pr_config
 
@@ -66,7 +66,7 @@ class Supersonic:
         repo: str,
         changes: Dict[str, Optional[str]],
         config: Optional[Union[PRConfig, Dict]] = None,
-        **kwargs
+        **kwargs,
     ) -> str:
         """
         Create a PR with the specified changes.
@@ -95,9 +95,7 @@ class Supersonic:
 
             # Create branch
             self.github.create_branch(
-                repo=repo,
-                branch=branch_name,
-                base_branch=pr_config.base_branch
+                repo=repo, branch=branch_name, base_branch=pr_config.base_branch
             )
 
             # Create/update/delete files
@@ -133,11 +131,11 @@ class Supersonic:
                 self.github.add_reviewers(repo, pr_number, pr_config.reviewers)
 
             # Enable auto-merge if requested
-            if getattr(pr_config, 'auto_merge', False):
+            if getattr(pr_config, "auto_merge", False):
                 self.github.enable_auto_merge(
                     repo=repo,
                     pr_number=pr_number,
-                    merge_method=getattr(pr_config, 'merge_strategy', 'squash')
+                    merge_method=getattr(pr_config, "merge_strategy", "squash"),
                 )
 
             return pr_url
@@ -146,11 +144,7 @@ class Supersonic:
             raise GitHubError(f"Failed to create PR: {e}")
 
     def create_pr_from_file(
-        self, 
-        repo: str, 
-        local_file_path: str, 
-        upstream_path: str, 
-        **kwargs
+        self, repo: str, local_file_path: str, upstream_path: str, **kwargs
     ) -> str:
         """
         Create a PR from a local file.
@@ -166,20 +160,12 @@ class Supersonic:
         """
         try:
             content = Path(local_file_path).read_text()
-            return self.create_pr(
-                repo=repo,
-                changes={upstream_path: content},
-                **kwargs
-            )
+            return self.create_pr(repo=repo, changes={upstream_path: content}, **kwargs)
         except Exception as e:
             raise GitHubError(f"Failed to update file: {e}")
 
     def create_pr_from_content(
-        self, 
-        repo: str, 
-        content: str, 
-        path: str, 
-        **kwargs
+        self, repo: str, content: str, path: str, **kwargs
     ) -> str:
         """
         Create a PR to update a single file with provided content.
@@ -194,11 +180,7 @@ class Supersonic:
             URL of the created PR
         """
         try:
-            return self.create_pr(
-                repo=repo,
-                changes={path: content},
-                **kwargs
-            )
+            return self.create_pr(repo=repo, changes={path: content}, **kwargs)
         except Exception as e:
             raise GitHubError(f"Failed to update content: {e}")
 
@@ -221,11 +203,7 @@ class Supersonic:
         """
         try:
             changes: Dict[str, Optional[str]] = {k: v for k, v in contents.items()}
-            return self.create_pr(
-                repo=repo,
-                changes=changes,
-                **kwargs
-            )
+            return self.create_pr(repo=repo, changes=changes, **kwargs)
         except Exception as e:
             raise GitHubError(f"Failed to update files: {e}")
 
@@ -255,10 +233,6 @@ class Supersonic:
                 except Exception as e:
                     raise GitHubError(f"Failed to read file {local_path}: {e}")
 
-            return self.create_pr(
-                repo=repo,
-                changes=contents,
-                **kwargs
-            )
+            return self.create_pr(repo=repo, changes=contents, **kwargs)
         except Exception as e:
             raise GitHubError(f"Failed to update files: {e}")
