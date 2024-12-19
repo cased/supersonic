@@ -78,10 +78,10 @@ Say you just want to create a PR to update a file—here's the simplest way:
 ```python
 from supersonic import Supersonic
 
-supersonic = Supersonic("your-github-token")
+my_supersonic = Supersonic("your-github-token")
 
 # Create a PR to update a file
-pr_url = supersonic.create_pr_from_content(
+pr_url = my_supersonic.create_pr_from_content(
     repo="user/repo",
     content="print('hello world')",
     path="hello.py"
@@ -99,7 +99,7 @@ Supersonic provides four main ways to create PRs, each designed for different us
 When you have a local file that you want to propose as a change:
 
 ```python
-pr_url = supersonic.create_pr_from_file(
+pr_url = my_supersonic.create_pr_from_file(
     repo="user/repo",
     local_file_path="local/config.json",  # Path to your local file
     upstream_path="config/settings.json",  # Where it should go in the repo
@@ -118,7 +118,7 @@ This is ideal for:
 When you have content in memory that you want to propose as a change:
 
 ```python
-pr_url = supersonic.create_pr_from_content(
+pr_url = my_supersonic.create_pr_from_content(
     repo="user/repo",
     content="print('hello')",  # The actual content
     path="src/hello.py",       # Where to put it in the repo
@@ -140,7 +140,7 @@ This is perfect for:
 When you have multiple pieces of content in memory to update at once:
 
 ```python
-pr_url = supersonic.create_pr_from_multiple_contents(
+pr_url = my_supersonic.create_pr_from_multiple_contents(
     repo="user/repo",
     contents={
         "config/settings.json": '{"debug": true}',
@@ -168,7 +168,7 @@ Great for:
 When you have multiple local files to propose as changes:
 
 ```python
-pr_url = supersonic.create_pr_from_files(
+pr_url = my_supersonic.create_pr_from_files(
     repo="user/repo",
     files={
         "local/config.json": "config/settings.json",
@@ -203,7 +203,7 @@ All PR creation methods accept these common options:
 
 ```python
 # Configure PR options as keyword arguments
-pr_url = await supersonic.update_content(
+pr_url = my_supersonic.update_content(
     repo="user/repo",
     content="print('hello')",
     path="src/hello.py",
@@ -243,7 +243,8 @@ config = PRConfig(
     auto_merge=False
 )
 
-pr_url = await supersonic.create_pr(
+my_supersonic = Supersonic("your-github-token")
+pr_url = my_supersonic.create_pr(
     repo="user/repo",
     changes={"config.json": new_config_content},
     config=config
@@ -298,7 +299,7 @@ config = {
     }
 }
 
-supersonic = Supersonic(config)
+my_supersonic_with_config = Supersonic(config)
 ```
 
 ### Environment Variables
@@ -315,11 +316,11 @@ Perfect for AI applications that suggest code improvements. Supersonic makes it 
 ```python
 def handle_improvement_request(repo: str, file_path: str, user_prompt: str):
     # Your AI logic to generate improvements
-    improved_code = await ai.improve_code(user_prompt)
+    improved_code = ai.improve_code(user_prompt)
     
     # Create PR with improvements
-    supersonic = Supersonic(config)
-    pr_url = await supersonic.update_content(
+    my_supersonic = Supersonic(config)
+    pr_url = my_supersonic.update_content(
         repo=repo,
         content=improved_code,
         path=file_path,
@@ -349,8 +350,8 @@ def update_api_docs(repo: str, api_changes: Dict[str, Any]):
     }
     
     # Create PR with all doc updates
-    supersonic = Supersonic(config)
-    pr_url = await supersonic.update_files(
+    my_supersonic = Supersonic(config)
+    pr_url = my_supersonic.update_files(
         repo=repo,
         files=docs,
         title="Update API documentation",
@@ -375,8 +376,8 @@ def update_customer_config(customer_id: str, new_settings: Dict):
     repo = f"customers/{customer_id}/config"
     config_json = json.dumps(new_settings, indent=2)
     
-    supersonic = Supersonic(config)
-    pr_url = await supersonic.update_content(
+    my_supersonic = Supersonic(config)
+    pr_url = my_supersonic.update_content(
         repo=repo,
         content=config_json,
         path="settings.json",
