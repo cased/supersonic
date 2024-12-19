@@ -127,3 +127,7 @@ class GitHandler:
 
         except Exception as e:
             raise GitError(f"Failed to apply diff: {e}")
+
+
+class GitClient:  # If this exists, we need to export it
+    ...

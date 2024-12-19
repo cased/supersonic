@@ -1,50 +1,33 @@
-from typing import Optional, Union, Dict, Mapping
+from typing import Optional, Union, Dict, Mapping, Any
 from pathlib import Path
 import time
 
 from .config import SupersonicConfig, PRConfig
 from .errors import GitHubError
 from .github import GitHubAPI
+from ..utils import GitClient
 
 
 class Supersonic:
     """Main class for Supersonic PR operations"""
 
-    def __init__(self, config: Union[SupersonicConfig, Dict, str], **kwargs):
-        """
-        Initialize Supersonic with configuration.
-
-        Args:
-            config: Either a SupersonicConfig object, dict of config values,
-                   or a GitHub token string
-            **kwargs: Additional configuration options
-        """
-        if isinstance(config, str):
-            self.config = SupersonicConfig(github_token=config, **kwargs)
-        elif isinstance(config, dict):
-            self.config = SupersonicConfig(**config, **kwargs)
-        else:
-            self.config = config
-
-        self.github = GitHubAPI(self.config.github_token, self.config.base_url)
+    def __init__(
+        self,
+        config: SupersonicConfig,
+        github_api: Optional[GitHubAPI] = None,
+        git_client: Optional[GitClient] = None,
+    ) -> None:
+        """Initialize PR creator"""
+        self.config = config
+        self.github = github_api or GitHubAPI(token=config.github_token, base_url=config.base_url)
+        self.git = git_client or GitClient()
 
     def _prepare_pr_config(
-        self, pr_config: Optional[Union[PRConfig, Dict]] = None, **kwargs
+        self,
+        pr_config: Optional[Union[PRConfig, Dict[str, Any]]] = None,
+        **kwargs: Any,
     ) -> PRConfig:
-        """
-        Prepares PR configuration, either from a PRConfig/dict or from kwargs.
-        Cannot mix both approaches.
-
-        Args:
-            pr_config: Optional PRConfig object or dict
-            **kwargs: Configuration options passed as keyword arguments
-
-        Returns:
-            PRConfig object with the configuration to use
-
-        Raises:
-            ValueError: If both pr_config and kwargs are provided
-        """
+        """Prepare PR configuration"""
         if pr_config is not None:
             if kwargs:
                 raise ValueError(
@@ -65,25 +48,10 @@ class Supersonic:
         self,
         repo: str,
         changes: Dict[str, Optional[str]],
-        config: Optional[Union[PRConfig, Dict]] = None,
-        **kwargs,
+        config: Optional[Union[PRConfig, Dict[str, Any]]] = None,
+        **kwargs: Any,
     ) -> str:
-        """
-        Create a PR with the specified changes.
-
-        Args:
-            repo: Repository name (owner/repo)
-            changes: Dict mapping file paths to their new content
-            config: Optional PRConfig object or dict for full configuration
-            **kwargs: PR options (title, description, draft, etc.)
-
-        Returns:
-            URL of the created PR
-
-        Raises:
-            ValueError: If both config and kwargs are provided
-            GitHubError: If PR creation fails
-        """
+        """Create a PR with the specified changes."""
         # Get configuration (either from config object or kwargs)
         # This is outside the try/except so ValueError bubbles up directly
         pr_config = self._prepare_pr_config(pr_config=config, **kwargs)
@@ -144,43 +112,46 @@ class Supersonic:
             raise GitHubError(f"Failed to create PR: {e}")
 
     def create_pr_from_file(
-        self, repo: str, local_file_path: str, upstream_path: str, **kwargs
+        self,
+        repo: str,
+        local_file_path: str,
+        upstream_path: str,
+        title: Optional[str] = None,
+        draft: bool = False,
     ) -> str:
-        """
-        Create a PR from a local file.
-
-        Args:
-            repo: Repository name (owner/repo)
-            local_file_path: Path to local file
-            upstream_path: Where to put the file in the repo
-            **kwargs: PR options (title, description, draft, etc.)
-
-        Returns:
-            URL of the created PR
-        """
+        """Create PR from local file"""
         try:
             content = Path(local_file_path).read_text()
-            return self.create_pr(repo=repo, changes={upstream_path: content}, **kwargs)
+            return self.create_pr(repo=repo, changes={upstream_path: content}, title=title, draft=draft)
         except Exception as e:
             raise GitHubError(f"Failed to update file: {e}")
 
     def create_pr_from_content(
-        self, repo: str, content: str, path: str, **kwargs
+        self,
+        repo: str,
+        content: str,
+        upstream_path: str,
+        title: Optional[str] = None,
+        draft: bool = False,
+        **kwargs: Any,
     ) -> str:
-        """
-        Create a PR to update a single file with provided content.
-
-        Args:
-            repo: Repository name (owner/repo)
-            content: The new file content
-            path: Where to put the file in the repo
-            **kwargs: PR options (title, description, draft, etc.)
-
-        Returns:
-            URL of the created PR
-        """
+        """Create PR from content"""
         try:
-            return self.create_pr(repo=repo, changes={path: content}, **kwargs)
+            # Check for unknown kwargs before passing to create_pr
+            valid_kwargs = {'title', 'draft', 'description', 'base_branch', 'labels', 'reviewers', 'team_reviewers', 'merge_strategy', 'delete_branch_on_merge', 'auto_merge'}
+            unknown_kwargs = set(kwargs.keys()) - valid_kwargs
+            if unknown_kwargs:
+                raise ValueError(f"Unknown arguments: {', '.join(unknown_kwargs)}")
+
+            return self.create_pr(
+                repo=repo,
+                changes={upstream_path: content},
+                title=title or "Update file",  # Provide default title
+                draft=draft,
+                **kwargs
+            )
+        except ValueError as e:
+            raise ValueError(str(e))
         except Exception as e:
             raise GitHubError(f"Failed to update content: {e}")
 
@@ -188,22 +159,14 @@ class Supersonic:
         self,
         repo: str,
         contents: Mapping[str, str],
-        **kwargs,
+        title: Optional[str] = None,
+        draft: bool = False,
+        **kwargs: Any,
     ) -> str:
-        """
-        Create a PR to update multiple files with provided content.
-
-        Args:
-            repo: Repository name (owner/repo)
-            contents: Dict mapping file paths to their content
-            **kwargs: PR options (title, description, draft, etc.)
-
-        Returns:
-            URL of the created PR
-        """
+        """Create a PR to update multiple files with provided content."""
         try:
             changes: Dict[str, Optional[str]] = {k: v for k, v in contents.items()}
-            return self.create_pr(repo=repo, changes=changes, **kwargs)
+            return self.create_pr(repo=repo, changes=changes, title=title, draft=draft, **kwargs)
         except Exception as e:
             raise GitHubError(f"Failed to update files: {e}")
 
@@ -211,19 +174,11 @@ class Supersonic:
         self,
         repo: str,
         files: Mapping[str, str],
-        **kwargs,
+        title: Optional[str] = None,
+        draft: bool = False,
+        **kwargs: Any,
     ) -> str:
-        """
-        Create a PR to update multiple files from local files.
-
-        Args:
-            repo: Repository name (owner/repo)
-            files: Dict mapping local file paths to their upstream paths
-            **kwargs: PR options (title, description, draft, etc.)
-
-        Returns:
-            URL of the created PR
-        """
+        """Create a PR to update multiple files from local files."""
         try:
             contents: Dict[str, Optional[str]] = {}
             for local_path, upstream_path in files.items():
@@ -233,6 +188,6 @@ class Supersonic:
                 except Exception as e:
                     raise GitHubError(f"Failed to read file {local_path}: {e}")
 
-            return self.create_pr(repo=repo, changes=contents, **kwargs)
+            return self.create_pr(repo=repo, changes=contents, title=title, draft=draft, **kwargs)
         except Exception as e:
             raise GitHubError(f"Failed to update files: {e}")

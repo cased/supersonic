@@ -28,7 +28,8 @@ dev = [
     "pytest>=7.4.0,<8.0.0",
     "pytest-cov>=4.1.0,<5.0.0",
     "ruff>=0.1.9,<0.2.0",
-    "types-requests>=2.31.0,<3.0.0",
+    "types-click>=7.1.8,<8.0.0",
+    "pytest-mypy>=0.10.3,<0.11.0",
 ]
 
 [project.scripts]
@@ -39,7 +40,23 @@ line-length = 88
 target-version = "py311"
 
 [tool.mypy]
-python_version = "3.11"
-strict = false
+python_version = "3.8"
 warn_return_any = true
 warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = false
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+
+[[tool.mypy.overrides]]
+module = ["pytest.*", "click.*", "git.*", "github.*", "pydantic.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["supersonic.tests.*"]
+ignore_errors = true
