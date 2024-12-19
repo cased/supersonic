@@ -1,7 +1,6 @@
-from typing import Optional, List, Union, cast
+from typing import Optional, List, Union
 from pathlib import Path
 from github import Github
-from github.ContentFile import ContentFile
 from git import Repo
 import tempfile
 import os
@@ -59,8 +58,6 @@ class GitHandler:
                 if isinstance(contents, List):
                     raise GitError(f"Path '{path}' points to a directory")
 
-                # At this point contents must be a ContentFile
-                contents = cast(ContentFile, contents)
                 repo_obj.update_file(
                     path=path,
                     message=message,
@@ -128,6 +125,3 @@ class GitHandler:
         except Exception as e:
             raise GitError(f"Failed to apply diff: {e}")
 
-
-class GitClient:  # If this exists, we need to export it
-    ...

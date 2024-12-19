@@ -5,7 +5,6 @@ import time
 from .config import SupersonicConfig, PRConfig
 from .errors import GitHubError
 from .github import GitHubAPI
-from ..utils import GitClient
 
 
 class Supersonic:
@@ -15,12 +14,10 @@ class Supersonic:
         self,
         config: SupersonicConfig,
         github_api: Optional[GitHubAPI] = None,
-        git_client: Optional[GitClient] = None,
     ) -> None:
         """Initialize PR creator"""
         self.config = config
         self.github = github_api or GitHubAPI(token=config.github_token, base_url=config.base_url)
-        self.git = git_client or GitClient()
 
     def _prepare_pr_config(
         self,
