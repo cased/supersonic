@@ -11,15 +11,27 @@ class Supersonic:
     """Main class for Supersonic PR operations"""
 
     def __init__(
-        self,
-        config: SupersonicConfig,
-        github_api: Optional[GitHubAPI] = None,
+        self, 
+        config: Union[SupersonicConfig, Dict[str, Any], str], 
+        **kwargs: Any
     ) -> None:
-        """Initialize PR creator"""
-        self.config = config
-        self.github = github_api or GitHubAPI(
-            token=config.github_token, base_url=config.base_url
-        )
+        """
+        Initialize Supersonic with configuration.
+        Args:
+            config: Either a SupersonicConfig object, dict of config values,
+                   or a GitHub token string
+            **kwargs: Additional configuration options
+        """
+        if isinstance(config, str):
+            self.config = SupersonicConfig(github_token=config, **kwargs)
+        elif isinstance(config, dict):
+            self.config = SupersonicConfig(**config, **kwargs)
+        elif isinstance(config, SupersonicConfig):
+            self.config = config
+        else:
+            raise TypeError(f"Unexpected config type: {type(config)}")
+
+        self.github = GitHubAPI(self.config.github_token, self.config.base_url)
 
     def _prepare_pr_config(
         self,
