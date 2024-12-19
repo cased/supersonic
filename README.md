@@ -310,11 +310,6 @@ config = {
 my_supersonic_with_config = Supersonic(config)
 ```
 
-### Environment Variables
-
-Supersonic looks for these environment variables:
-- `GITHUB_TOKEN`: GitHub API token
-
 ## Use Cases
 
 ### AI-Powered Code Improvements
