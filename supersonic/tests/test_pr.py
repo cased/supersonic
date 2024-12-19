@@ -11,13 +11,17 @@ def mock_github():
     with patch("supersonic.core.pr.GitHubAPI") as mock:
         instance = mock.return_value
         instance.create_pull_request.return_value = "https://github.com/test/pr/1"
+        instance.create_pr.return_value = {"html_url": "https://github.com/test/pr/1"}
         yield instance
 
 
 @pytest.fixture
 def supersonic(mock_github):
     """Create Supersonic instance with mocked dependencies"""
-    return Supersonic(SupersonicConfig(github_token="test-token"))
+    config = SupersonicConfig(github_token="test-token")
+    instance = Supersonic(config)
+    instance.github = mock_github
+    return instance
 
 
 def test_create_pr_from_file(supersonic, tmp_path):

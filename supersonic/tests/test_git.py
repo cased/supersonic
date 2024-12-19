@@ -12,16 +12,21 @@ def git_handler():
 
 def test_create_branch(git_handler):
     """Test branch creation"""
-    mock_repo = Mock()
-    mock_branch = Mock()
-    mock_branch.commit.sha = "test-sha"
-    mock_repo.get_branch.return_value = mock_branch
-    git_handler.github.get_repo.return_value = mock_repo
+    with patch("supersonic.utils.git.requests.post") as mock_post:
+        mock_response = Mock()
+        mock_response.status_code = 201
+        mock_post.return_value = mock_response
 
-    git_handler.create_branch("owner/repo", "new-branch", "main")
-
-    mock_repo.get_branch.assert_called_with("main")
-    # Verify branch creation request
+        mock_repo = Mock()
+        mock_branch = Mock()
+        mock_branch.commit.sha = "test-sha"
+        mock_repo.get_branch.return_value = mock_branch
+        git_handler.github.get_repo.return_value = mock_repo
+        
+        git_handler.create_branch("owner/repo", "new-branch", "main")
+        
+        mock_repo.get_branch.assert_called_with("main")
+        mock_post.assert_called_once()
 
 
 def test_get_local_diff(git_handler, tmp_path):
