@@ -9,9 +9,12 @@ Streamlined GitHub PR automation for modern applications. Supersonic provides a 
 - [Installation](#installation)
 - [Quick Start](#quick-start)
   - [Easiest Start](#easiest-start)
-  - [Update Single File](#update-single-file)
-  - [Update Multiple Files](#update-multiple-files)
-  - [Using the CLI (experimental)](#using-the-cli-experimental)
+  - [Working with Files and Content](#working-with-files-and-content)
+    - [1. Single File Updates (`create_pr_from_file`)](#1-single-file-updates-create_pr_from_file)
+    - [2. Single Content Updates (`create_pr_from_content`)](#2-single-content-updates-create_pr_from_content)
+    - [3. Multiple Content Updates (`create_pr_from_multiple_contents`)](#3-multiple-content-updates-create_pr_from_multiple_contents)
+    - [4. Multiple File Updates (`create_pr_from_files`)](#4-multiple-file-updates-create_pr_from_files)
+  - [Common Options](#common-options)
 - [Pull Request Configuration](#pull-request-configuration)
   - [Basic Usage](#basic-usage)
   - [Using PRConfig](#using-prconfig)
@@ -38,7 +41,6 @@ Supersonic solves this:
 - **Simple, High-Level API**: Create PRs with a single function call, using files or plain text content
 - **Safe Defaults**: All changes are created as PRs, allowing users to review before merging
 - **Enterprise Ready**: Full support for GitHub Enterprise and custom base URLs
-- **Async by Default**: Built for high-performance services that need to handle multiple PR creations
 - **Excessively customizable**: Full control over PR creation, set draft mode, reviewers, labels, etc.
 - **Best for apps, useful for scripts too**: Plug it into your SaaS app and delight your users. Or automate internal workflows.
 
@@ -79,7 +81,7 @@ from supersonic import Supersonic
 supersonic = Supersonic("your-github-token")
 
 # Create a PR to update a file
-pr_url = await supersonic.create_pr_from_content(
+pr_url = supersonic.create_pr_from_content(
     repo="user/repo",
     content="print('hello world')",
     path="hello.py"
@@ -88,49 +90,59 @@ pr_url = await supersonic.create_pr_from_content(
 print(f"Created PR: {pr_url}")
 ```
 
+### Working with Files and Content
 
-`supersonic` will automatically create a branch, create a PR with changes to the upstream file called `hello.py`, 
-and return the PR URL. In this case, it will also automatically generate a simple title and description for the PR. 
-You'll probably want more customization, or to use files instead of strings to generate the PR—so read on.
+Supersonic provides four main ways to create PRs, each designed for different use cases:
 
-### Update Single File
+#### 1. Single File Updates (`create_pr_from_file`)
 
-There are two ways to update a single file and create a PR for it. You can either provide the content directly as a string, 
-or point to a local file that contains the new code:
+When you have a local file that you want to propose as a change:
 
 ```python
-# Update with content directly
-pr_url = await supersonic.create_pr_from_content(
+pr_url = supersonic.create_pr_from_file(
     repo="user/repo",
-    content="print('hello')",
-    path="src/hello.py",
+    local_file_path="local/config.json",  # Path to your local file
+    upstream_path="config/settings.json",  # Where it should go in the repo
+    title="Update configuration",  # Optional
+    base_branch="develop"  # Optional, customize target branch
+)
+```
+
+This is ideal for:
+- Uploading configuration files
+- Proposing documentation changes from local files
+- Any single-file updates where you have the file locally
+
+#### 2. Single Content Updates (`create_pr_from_content`)
+
+When you have content in memory that you want to propose as a change:
+
+```python
+pr_url = supersonic.create_pr_from_content(
+    repo="user/repo",
+    content="print('hello')",  # The actual content
+    path="src/hello.py",       # Where to put it in the repo
     title="Add hello script",  # Optional
     description="Adds a simple hello world script",  # Optional
     draft=False,  # Optional, create as draft PR
     labels=["enhancement"],  # Optional labels
     reviewers=["username"]  # Optional reviewers
 )
-
-# Update a file
-pr_url = await supersonic.create_pr_from_file(
-    repo="user/repo",
-    local_file_path="local/config.json",
-    upstream_path="config/settings.json",
-    title="Update configuration",  # Optional
-    base_branch="develop"  # Optional, customize target branch
-)
 ```
 
-### Update Multiple Files
+This is perfect for:
+- Generated content (e.g., from AI)
+- Content manipulated in memory
+- Simple text changes without needing a file
 
-Need to update several files at once? Maybe you're updating configuration files across multiple services,
-or generating documentation for multiple endpoints? The `update_files` method lets you batch changes together. In `files`, pass a dictionary of upstream file paths as keys, and content strings as values:
+#### 3. Multiple Content Updates (`create_pr_from_multiple_contents`)
+
+When you have multiple pieces of content in memory to update at once:
 
 ```python
-# Update multiple files
-pr_url = await supersonic.create_pr_from_files(
+pr_url = supersonic.create_pr_from_multiple_contents(
     repo="user/repo",
-    files={
+    contents={
         "config/settings.json": '{"debug": true}',
         "README.md": "# Updated Docs\n\nNew content here"
     },
@@ -145,30 +157,45 @@ pr_url = await supersonic.create_pr_from_files(
 )
 ```
 
-### Using the CLI (experimental)
+Great for:
+- Batch updates to multiple files
+- Generated content for multiple files
+- Configuration changes across services
+- Documentation updates across multiple files
 
-All the same functionality is available through the command line interface, which is experimental.
-This is great for scripts or when you want to quickly create PRs without writing code:
+#### 4. Multiple File Updates (`create_pr_from_files`)
 
-```bash
-# Update file with content directly
-supersonic --token ghp_xxx update-content user/repo "print('hello')" src/hello.py \
-  --title "Add hello script" \
-  --description "Adds a hello world script" \
-  --reviewers username1,username2
+When you have multiple local files to propose as changes:
 
-# Update a single file
-supersonic --token ghp_xxx update user/repo config.json config/settings.json \
-  --title "Update configuration" \
-  --labels config,automated
-
-# Update multiple files
-supersonic --token ghp_xxx update-files user/repo \
-  -f '{"debug": true}' config/settings.json \
-  -f "# Title" README.md \
-  --title "Update configs and docs" \
-  --draft  # Create as draft PR
+```python
+pr_url = supersonic.create_pr_from_files(
+    repo="user/repo",
+    files={
+        "local/config.json": "config/settings.json",
+        "local/README.md": "docs/README.md"
+    },
+    title="Update configs and docs",
+    labels=["configuration", "documentation"]
+)
 ```
+
+Perfect for:
+- Bulk file uploads
+- Multi-file configuration changes
+- Documentation updates from local files
+- Any scenario where you have multiple local files to propose
+
+### Common Options
+
+All PR creation methods accept these common options:
+- `title`: Custom PR title
+- `description`: Detailed PR description
+- `draft`: Create as draft PR (default: False)
+- `labels`: List of labels to add, e.g. ["enhancement", "bugfix"]
+- `reviewers`: List of GitHub usernames to request review from
+- `base_branch`: Target branch (default: main)
+- `auto_merge`: Enable auto-merge (default: False)
+- `merge_strategy`: How to merge ("merge", "squash", "rebase")
 
 ## Pull Request Configuration
 
@@ -189,9 +216,10 @@ pr_url = await supersonic.update_content(
 )
 ```
 
-### Using PRConfig
+### Using PRConfig with `create_pr`
 
-For more control and reusability, use the PRConfig class:
+For more control and reusability, use the `PRConfig` class 
+directly with `create_pr`.
 
 ```python
 from supersonic import PRConfig
@@ -285,7 +313,7 @@ Supersonic looks for these environment variables:
 Perfect for AI applications that suggest code improvements. Supersonic makes it easy to turn AI suggestions into pull requests:
 
 ```python
-async def handle_improvement_request(repo: str, file_path: str, user_prompt: str):
+def handle_improvement_request(repo: str, file_path: str, user_prompt: str):
     # Your AI logic to generate improvements
     improved_code = await ai.improve_code(user_prompt)
     
@@ -312,7 +340,7 @@ async def handle_improvement_request(repo: str, file_path: str, user_prompt: str
 Keep documentation in sync with code changes:
 
 ```python
-async def update_api_docs(repo: str, api_changes: Dict[str, Any]):
+def update_api_docs(repo: str, api_changes: Dict[str, Any]):
     # Generate updated docs
     docs = {
         "docs/api/endpoints.md": generate_endpoint_docs(api_changes),
@@ -343,7 +371,7 @@ async def update_api_docs(repo: str, api_changes: Dict[str, Any]):
 Manage customer configurations through PRs:
 
 ```python
-async def update_customer_config(customer_id: str, new_settings: Dict):
+def update_customer_config(customer_id: str, new_settings: Dict):
     repo = f"customers/{customer_id}/config"
     config_json = json.dumps(new_settings, indent=2)
     

@@ -1,8 +1,8 @@
-from typing import Optional, List
-import aiohttp
+from typing import Optional, List, Dict, Any, cast
 from github import Github, Auth
-
 from .errors import GitHubError
+import requests
+from requests import Response
 
 
 class GitHubAPI:
@@ -13,23 +13,9 @@ class GitHubAPI:
         self.token = token
         self.base_url = base_url or "https://api.github.com"
         self.github = Github(auth=Auth.Token(token), base_url=self.base_url)
-        self._session: Optional[aiohttp.ClientSession] = None
 
-    async def _get_session(self) -> aiohttp.ClientSession:
-        """Get or create aiohttp session"""
-        if self._session is None or self._session.closed:
-            self._session = aiohttp.ClientSession(
-                headers={
-                    "Authorization": f"token {self.token}",
-                    "Accept": "application/vnd.github.v3+json",
-                }
-            )
-        return self._session
-
-    async def create_branch(
-        self, repo: str, branch: str, base_branch: str = "main"
-    ) -> None:
-        """Create a new branch from base branch"""
+    def create_branch(self, repo: str, branch: str, base_branch: str = "main") -> None:
+        """Create a new branch from base branch, using main by default"""
         try:
             repo_obj = self.github.get_repo(repo)
             base_ref = repo_obj.get_git_ref(f"heads/{base_branch}")
@@ -48,7 +34,7 @@ class GitHubAPI:
         except Exception as e:
             raise GitHubError(f"Failed to create branch: {e}")
 
-    async def update_file(
+    def update_file(
         self, repo: str, path: str, content: Optional[str], message: str, branch: str
     ) -> None:
         """Update or delete a file in the repository"""
@@ -90,7 +76,7 @@ class GitHubAPI:
         except Exception as e:
             raise GitHubError(f"Failed to update file: {e}")
 
-    async def create_pull_request(
+    def create_pull_request(
         self,
         repo: str,
         title: str,
@@ -109,7 +95,7 @@ class GitHubAPI:
         except Exception as e:
             raise GitHubError(f"Failed to create pull request: {e}")
 
-    async def add_labels(self, repo: str, pr_number: int, labels: List[str]) -> None:
+    def add_labels(self, repo: str, pr_number: int, labels: List[str]) -> None:
         """Add labels to a pull request"""
         try:
             repo_obj = self.github.get_repo(repo)
@@ -118,9 +104,7 @@ class GitHubAPI:
         except Exception as e:
             raise GitHubError(f"Failed to add labels: {e}")
 
-    async def add_reviewers(
-        self, repo: str, pr_number: int, reviewers: List[str]
-    ) -> None:
+    def add_reviewers(self, repo: str, pr_number: int, reviewers: List[str]) -> None:
         """Add reviewers to a pull request"""
         try:
             repo_obj = self.github.get_repo(repo)
@@ -129,19 +113,37 @@ class GitHubAPI:
         except Exception as e:
             raise GitHubError(f"Failed to add reviewers: {e}")
 
-    async def enable_auto_merge(
+    def enable_auto_merge(
         self, repo: str, pr_number: int, merge_method: str = "squash"
     ) -> None:
         """Enable auto-merge for a pull request"""
         try:
-            session = await self._get_session()
-            url = f"{self.base_url}/repos/{repo}/pulls/{pr_number}/auto_merge"
-
-            async with session.put(
-                url, json={"merge_method": merge_method}
-            ) as response:
-                if response.status not in (200, 201):
-                    text = await response.text()
-                    raise GitHubError(f"Failed to enable auto-merge: {text}")
+            repo_obj = self.github.get_repo(repo)
+            pr = repo_obj.get_pull(pr_number)
+            pr.enable_automerge(merge_method=merge_method)
         except Exception as e:
             raise GitHubError(f"Failed to enable auto-merge: {e}")
+
+    def create_pr(
+        self, repo: str, title: str, body: str, head: str, base: str
+    ) -> Dict[str, Any]:
+        """Create a pull request using REST API"""
+        response: Response = requests.post(
+            f"{self.base_url}/repos/{repo}/pulls",
+            headers={"Authorization": f"token {self.token}"},
+            json={
+                "title": title,
+                "body": body,
+                "head": head,
+                "base": base,
+            },
+        )
+        return cast(Dict[str, Any], response.json())
+
+    def get_pr(self, repo: str, pr_number: int) -> Dict[str, Any]:
+        """Get pull request details using REST API"""
+        response: Response = requests.get(
+            f"{self.base_url}/repos/{repo}/pulls/{pr_number}",
+            headers={"Authorization": f"token {self.token}"},
+        )
+        return cast(Dict[str, Any], response.json())

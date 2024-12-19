@@ -5,8 +5,6 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-echo "🧹 Running formatters and linters..."
-
 # Run ruff
 echo -n "Running ruff... "
 if ruff check --fix; then
@@ -26,6 +24,6 @@ else
 fi
 
 echo "🧪 Running tests..."
-pytest supersonic/tests/test_cli.py -v
+pytest -v
 
 echo -e "\n${GREEN}All done!${NC}"

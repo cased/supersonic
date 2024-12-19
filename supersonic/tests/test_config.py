@@ -119,3 +119,67 @@ def test_pr_config_mutation():
 
     config1.team_reviewers.append("team1")
     assert config2.team_reviewers == []
+
+
+def test_default_pr_config():
+    """Test default PR configuration"""
+    config = PRConfig()
+    assert config.title == "Automated changes"
+    assert config.base_branch == "main"
+    assert config.draft is False
+    assert config.labels == []
+    assert config.reviewers == []
+    assert config.team_reviewers == []
+    assert config.merge_strategy == MergeStrategy.SQUASH
+    assert config.delete_branch_on_merge is True
+    assert config.auto_merge is False
+
+
+def test_custom_pr_config():
+    """Test custom PR configuration"""
+    config = PRConfig(
+        title="Test PR",
+        description="Test description",
+        base_branch="develop",
+        draft=True,
+        labels=["test"],
+        reviewers=["user1"],
+        team_reviewers=["team1"],
+        merge_strategy=MergeStrategy.REBASE,
+        delete_branch_on_merge=False,
+        auto_merge=True,
+    )
+    assert config.title == "Test PR"
+    assert config.description == "Test description"
+    assert config.base_branch == "develop"
+    assert config.draft is True
+    assert config.labels == ["test"]
+    assert config.reviewers == ["user1"]
+    assert config.team_reviewers == ["team1"]
+    assert config.merge_strategy == MergeStrategy.REBASE
+    assert config.delete_branch_on_merge is False
+    assert config.auto_merge is True
+
+
+def test_supersonic_config_from_token():
+    """Test creating config from token string"""
+    config = SupersonicConfig(github_token="test-token")
+    assert config.github_token == "test-token"
+    assert config.base_url == "https://api.github.com"
+    assert config.app_name is None
+    assert isinstance(config.default_pr_config, PRConfig)
+
+
+def test_supersonic_config_from_dict():
+    """Test creating config from dictionary"""
+    config = SupersonicConfig(
+        github_token="test-token",
+        base_url="https://github.enterprise.com/api/v3",
+        app_name="test-app",
+        default_pr_config={"title": "Custom Default", "draft": True},
+    )
+    assert config.github_token == "test-token"
+    assert config.base_url == "https://github.enterprise.com/api/v3"
+    assert config.app_name == "test-app"
+    assert config.default_pr_config.title == "Custom Default"
+    assert config.default_pr_config.draft is True
