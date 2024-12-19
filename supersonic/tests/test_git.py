@@ -22,9 +22,9 @@ def test_create_branch(git_handler):
         mock_branch.commit.sha = "test-sha"
         mock_repo.get_branch.return_value = mock_branch
         git_handler.github.get_repo.return_value = mock_repo
-        
+
         git_handler.create_branch("owner/repo", "new-branch", "main")
-        
+
         mock_repo.get_branch.assert_called_with("main")
         mock_post.assert_called_once()
 
