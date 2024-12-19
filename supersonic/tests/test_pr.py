@@ -139,7 +139,7 @@ def test_create_pr_with_options(supersonic, tmp_path):
 def test_create_pr_with_config_object(supersonic):
     """Test creating PR with PRConfig object"""
     from supersonic.core.config import PRConfig
-    
+
     config = PRConfig(
         title="Test PR",
         description="Test description",
@@ -147,20 +147,25 @@ def test_create_pr_with_config_object(supersonic):
         labels=["test"],
         reviewers=["user1"],
     )
-    
+
     url = supersonic.create_pr_from_content(
         repo="owner/repo",
         content="test content",
         path="test.txt",
         config=config,
     )
-    
+
     assert url == "https://github.com/test/pr/1"
     supersonic.github.create_pr.assert_called_once_with(
         repo="owner/repo",
         changes={"test.txt": "test content"},
-        config={"title": "Test PR", "description": "Test description", 
-               "draft": True, "labels": ["test"], "reviewers": ["user1"]},
+        config={
+            "title": "Test PR",
+            "description": "Test description",
+            "draft": True,
+            "labels": ["test"],
+            "reviewers": ["user1"],
+        },
     )
 
 
@@ -183,7 +188,7 @@ def test_create_pr_with_auto_merge(supersonic):
         auto_merge=True,
         merge_strategy="squash",
     )
-    
+
     assert url == "https://github.com/test/pr/1"
     # Verify auto-merge was enabled
     supersonic.github.enable_auto_merge.assert_called_once_with(
@@ -201,7 +206,7 @@ def test_create_pr_with_team_reviewers(supersonic):
         path="test.txt",
         team_reviewers=["team1", "team2"],
     )
-    
+
     assert url == "https://github.com/test/pr/1"
     # Verify team reviewers were added
     supersonic.github.add_team_reviewers.assert_called_once_with(

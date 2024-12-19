@@ -26,14 +26,19 @@ def test_update_command(runner, mock_supersonic, tmp_path):
     test_file = tmp_path / "test.txt"
     test_file.write_text("test content")
 
-    result = runner.invoke(cli, [
-        "--token", "test-token",
-        "update",
-        "owner/repo",
-        str(test_file),
-        "docs/test.txt",
-        "--title", "Test PR"
-    ])
+    result = runner.invoke(
+        cli,
+        [
+            "--token",
+            "test-token",
+            "update",
+            "owner/repo",
+            str(test_file),
+            "docs/test.txt",
+            "--title",
+            "Test PR",
+        ],
+    )
 
     assert result.exit_code == 0
     assert "Created PR: https://github.com/test/pr/1" in result.output
@@ -42,14 +47,19 @@ def test_update_command(runner, mock_supersonic, tmp_path):
 
 def test_update_content_command(runner, mock_supersonic):
     """Test update-content command"""
-    result = runner.invoke(cli, [
-        "--token", "test-token",
-        "update-content",
-        "owner/repo",
-        "test content",
-        "test.txt",
-        "--title", "Test PR"
-    ])
+    result = runner.invoke(
+        cli,
+        [
+            "--token",
+            "test-token",
+            "update-content",
+            "owner/repo",
+            "test content",
+            "test.txt",
+            "--title",
+            "Test PR",
+        ],
+    )
 
     assert result.exit_code == 0
     assert "Created PR: https://github.com/test/pr/1" in result.output
@@ -63,14 +73,23 @@ def test_update_files_command(runner, mock_supersonic, tmp_path):
     file2 = tmp_path / "test2.txt"
     file2.write_text("content2")
 
-    result = runner.invoke(cli, [
-        "--token", "test-token",
-        "update-files",
-        "owner/repo",
-        "-f", str(file1), "docs/test1.txt",
-        "-f", str(file2), "docs/test2.txt",
-        "--title", "Test PR"
-    ])
+    result = runner.invoke(
+        cli,
+        [
+            "--token",
+            "test-token",
+            "update-files",
+            "owner/repo",
+            "-f",
+            str(file1),
+            "docs/test1.txt",
+            "-f",
+            str(file2),
+            "docs/test2.txt",
+            "--title",
+            "Test PR",
+        ],
+    )
 
     assert result.exit_code == 0
     assert "Created PR: https://github.com/test/pr/1" in result.output
@@ -79,12 +98,9 @@ def test_update_files_command(runner, mock_supersonic, tmp_path):
 
 def test_invalid_repo_format(runner):
     """Test error on invalid repo format"""
-    result = runner.invoke(cli, [
-        "--token", "test-token",
-        "update",
-        "invalid-repo",
-        "test.txt"
-    ])
+    result = runner.invoke(
+        cli, ["--token", "test-token", "update", "invalid-repo", "test.txt"]
+    )
 
     assert result.exit_code != 0
     assert "Invalid repository format" in result.output
@@ -92,12 +108,9 @@ def test_invalid_repo_format(runner):
 
 def test_missing_file(runner):
     """Test error on missing file"""
-    result = runner.invoke(cli, [
-        "--token", "test-token",
-        "update",
-        "owner/repo",
-        "nonexistent.txt"
-    ])
+    result = runner.invoke(
+        cli, ["--token", "test-token", "update", "owner/repo", "nonexistent.txt"]
+    )
 
     assert result.exit_code != 0
     assert "File not found" in result.output

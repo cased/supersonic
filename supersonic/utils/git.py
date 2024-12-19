@@ -38,12 +38,12 @@ class GitHandler:
             response = requests.post(
                 url,
                 headers=self.headers,
-                json={"ref": f"refs/heads/{branch}", "sha": base_sha}
+                json={"ref": f"refs/heads/{branch}", "sha": base_sha},
             )
-            
+
             if response.status_code not in (200, 201):
                 raise GitError(f"Failed to create branch: {response.text}")
-                
+
         except Exception as e:
             raise GitError(f"Failed to create branch: {e}")
 
@@ -58,7 +58,7 @@ class GitHandler:
                 contents = repo_obj.get_contents(path, ref=branch)
                 if isinstance(contents, List):
                     raise GitError(f"Path '{path}' points to a directory")
-                
+
                 # At this point contents must be a ContentFile
                 contents = cast(ContentFile, contents)
                 repo_obj.update_file(

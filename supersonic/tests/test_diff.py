@@ -15,7 +15,7 @@ index abc..def
 """
     parser = DiffParser()
     diffs = parser.parse(diff_content)
-    
+
     assert len(diffs) == 1
     assert diffs[0].path == "test.txt"
     assert diffs[0].new_content == "new content\nunchanged"
@@ -37,7 +37,7 @@ index 000000..def
 """
     parser = DiffParser()
     diffs = parser.parse(diff_content)
-    
+
     assert len(diffs) == 1
     assert diffs[0].path == "new.txt"
     assert diffs[0].new_content == "new content"
@@ -57,7 +57,7 @@ def test_generate_commit_message():
             is_deletion=False,
         )
     ]
-    
+
     message = parser.generate_commit_message(diffs)
     assert "Update" in message
-    assert "py" in message 
+    assert "py" in message

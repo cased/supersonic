@@ -4,6 +4,7 @@ from .errors import GitHubError
 import requests
 from requests import Response
 
+
 class GitHubAPI:
     """Wrapper for GitHub API operations"""
 
@@ -123,7 +124,9 @@ class GitHubAPI:
         except Exception as e:
             raise GitHubError(f"Failed to enable auto-merge: {e}")
 
-    def create_pr(self, repo: str, title: str, body: str, head: str, base: str) -> Dict[str, Any]:
+    def create_pr(
+        self, repo: str, title: str, body: str, head: str, base: str
+    ) -> Dict[str, Any]:
         """Create a pull request using REST API"""
         response: Response = requests.post(
             f"{self.base_url}/repos/{repo}/pulls",

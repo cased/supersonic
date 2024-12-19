@@ -151,9 +151,7 @@ def test_add_labels(github_api, mock_gh_repo):
     mock_pr = Mock()
     mock_gh_repo.get_pull.return_value = mock_pr
 
-    github_api.add_labels(
-        repo="owner/repo", pr_number=1, labels=["bug", "feature"]
-    )
+    github_api.add_labels(repo="owner/repo", pr_number=1, labels=["bug", "feature"])
 
     mock_gh_repo.get_pull.assert_called_with(1)
     mock_pr.add_to_labels.assert_called_with("bug", "feature")
@@ -178,9 +176,7 @@ def test_enable_auto_merge(github_api, mock_gh_repo):
     mock_gh_repo.get_pull.return_value = mock_pr
     mock_pr.enable_automerge = Mock()
 
-    github_api.enable_auto_merge(
-        repo="owner/repo", pr_number=1, merge_method="squash"
-    )
+    github_api.enable_auto_merge(repo="owner/repo", pr_number=1, merge_method="squash")
 
     mock_pr.enable_automerge.assert_called_with(merge_method="squash")
 

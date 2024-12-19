@@ -187,9 +187,7 @@ class Supersonic:
             URL of the created PR
         """
         try:
-            return self.create_pr(
-                repo=repo, changes={path: content}, config=kwargs
-            )
+            return self.create_pr(repo=repo, changes={path: content}, config=kwargs)
         except Exception as e:
             raise GitHubError(f"Failed to update content: {e}")
 
