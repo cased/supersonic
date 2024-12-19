@@ -61,8 +61,8 @@ uv pip install supersonic
 # Development installation
 git clone https://github.com/cased/supersonic
 cd supersonic
-uv venv
-source .venv/bin/activate
+
+uv venv && source .venv/bin/activate
 uv pip install -r requirements-dev.txt
 uv pip install -e .
 ```
