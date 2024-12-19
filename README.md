@@ -216,9 +216,10 @@ pr_url = await supersonic.update_content(
 )
 ```
 
-### Using PRConfig
+### Using PRConfig with `create_pr`
 
-For more control and reusability, use the `PRConfig` class:
+For more control and reusability, use the `PRConfig` class 
+directly with `create_pr`.
 
 ```python
 from supersonic import PRConfig

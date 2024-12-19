@@ -24,6 +24,6 @@ else
 fi
 
 echo "🧪 Running tests..."
-pytest supersonic/tests/test_cli.py -v
+pytest -v
 
 echo -e "\n${GREEN}All done!${NC}"

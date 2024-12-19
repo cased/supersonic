@@ -15,7 +15,7 @@ class GitHubAPI:
         self.github = Github(auth=Auth.Token(token), base_url=self.base_url)
 
     def create_branch(self, repo: str, branch: str, base_branch: str = "main") -> None:
-        """Create a new branch from base branch"""
+        """Create a new branch from base branch, using main by default"""
         try:
             repo_obj = self.github.get_repo(repo)
             base_ref = repo_obj.get_git_ref(f"heads/{base_branch}")
