@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "supersonic"
-version = "0.2.0-preview"
+version = "0.2.0"
 description = "GitHub PR automation for modern applications"
 readme = "README.md"
 license = "MIT"
@@ -43,8 +43,3 @@ python_version = "3.11"
 strict = false
 warn_return_any = true
 warn_unused_configs = true
-
-[tool.hatch.build]
-include = [
-    "supersonic/py.typed",
-]
