@@ -36,7 +36,7 @@ supersonic = "supersonic.cli:cli"
 
 [tool.ruff]
 line-length = 88
-target-version = "py39"
+target-version = "py311"
 
 [tool.mypy]
 python_version = "3.11"
