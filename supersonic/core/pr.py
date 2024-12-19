@@ -11,9 +11,7 @@ class Supersonic:
     """Main class for Supersonic PR operations"""
 
     def __init__(
-        self, 
-        config: Union[SupersonicConfig, Dict[str, Any], str], 
-        **kwargs: Any
+        self, config: Union[SupersonicConfig, Dict[str, Any], str], **kwargs: Any
     ) -> None:
         """
         Initialize Supersonic with configuration.
