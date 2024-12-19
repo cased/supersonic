@@ -139,7 +139,10 @@ This is perfect for:
 
 #### 3. Multiple Content Updates (`create_pr_from_multiple_contents`)
 
-When you have multiple pieces of content in memory to update at once:
+Use when you have multiple pieces of content in memory to update at once.
+Now `contents` is a dictionary, with the key being the upstream file path,
+and the value being the content. You can pass multiple keys, one for each 
+file.
 
 ```python
 pr_url = my_supersonic.create_pr_from_multiple_contents(
@@ -167,7 +170,9 @@ Great for:
 
 #### 4. Multiple File Updates (`create_pr_from_files`)
 
-When you have multiple local files to propose as changes:
+Use you have multiple local files to propose as changes.
+You use `files` here, which is a dictionary mapping local file paths
+to your desired upstream file paths.
 
 ```python
 pr_url = my_supersonic.create_pr_from_files(
