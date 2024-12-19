@@ -191,3 +191,10 @@ def test_enable_auto_merge_error(github_api, mock_gh_repo):
         github_api.enable_auto_merge(
             repo="owner/repo", pr_number=1, merge_method="squash"
         )
+
+
+def test_github_initialization() -> None:
+    """Test GitHub API initialization"""
+    api = GitHubAPI(token="test-token")
+    assert api.token == "test-token"
+    assert api.base_url == "https://api.github.com"

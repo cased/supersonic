@@ -7,14 +7,14 @@ from supersonic import Supersonic
 from supersonic.core.config import SupersonicConfig
 
 
-def validate_repo(ctx, param, value):
+def validate_repo(ctx: click.Context, param: click.Parameter, value: str) -> str:
     """Validate repository format (owner/repo)"""
     if not re.match(r"^[^/]+/[^/]+$", value):
         raise click.BadParameter("Invalid repository format. Use owner/repo")
     return value
 
 
-def validate_file(ctx, param, value):
+def validate_file(ctx: click.Context, param: click.Parameter, value: str) -> str:
     """Validate that file exists"""
     path = Path(value)
     if not path.exists():
@@ -78,7 +78,7 @@ def update_content(
     repo: str,
     content: str,
     path: str,
-    title: str,
+    title: Optional[str],
     draft: bool,
 ) -> None:
     """Update a file with provided content"""
@@ -86,7 +86,7 @@ def update_content(
     url: str = supersonic.create_pr_from_content(
         repo=repo,
         content=content,
-        path=path,
+        upstream_path=path,
         title=title or f"Update {path}",
         draft=draft,
     )
@@ -131,7 +131,3 @@ def update_files(
         click.echo(f"Created PR: {url}")
     except Exception as e:
         raise click.ClickException(f"Error: {str(e)}")
-
-
-if __name__ == "__main__":
-    cli()

@@ -1,4 +1,4 @@
-from typing import Optional, List, Dict, Any, cast
+from typing import Optional, List, Dict, Any
 from github import Github, Auth
 from .errors import GitHubError
 import requests
@@ -91,7 +91,7 @@ class GitHubAPI:
             pr = repo_obj.create_pull(
                 title=title, body=body, head=head, base=base, draft=draft
             )
-            return pr.html_url
+            return str(pr.html_url)
         except Exception as e:
             raise GitHubError(f"Failed to create pull request: {e}")
 
@@ -138,7 +138,10 @@ class GitHubAPI:
                 "base": base,
             },
         )
-        return cast(Dict[str, Any], response.json())
+        if not response.ok:
+            raise GitHubError(f"Failed to create PR: {response.status_code}")
+        result: Dict[str, Any] = response.json()
+        return result
 
     def get_pr(self, repo: str, pr_number: int) -> Dict[str, Any]:
         """Get pull request details using REST API"""
@@ -146,4 +149,12 @@ class GitHubAPI:
             f"{self.base_url}/repos/{repo}/pulls/{pr_number}",
             headers={"Authorization": f"token {self.token}"},
         )
-        return cast(Dict[str, Any], response.json())
+        if not response.ok:
+            raise GitHubError(f"Failed to get PR: {response.status_code}")
+        result: Dict[str, Any] = response.json()
+        return result
+
+    def get_default_branch(self, repo: str) -> str:
+        """Get the default branch for a repository"""
+        repo_obj = self.github.get_repo(repo)
+        return str(repo_obj.default_branch)

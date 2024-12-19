@@ -73,7 +73,9 @@ uv pip install -e .
 
 First an idea of what Supersonic can do. 
 
-Say you just want to create a PR to update a file—here's the simplest way:
+Say you just want to create a PR to update a file.
+You can do this with `create_pr_from_content`, just by providing the content 
+and the upstream file path where you want the content to go.
 
 ```python
 from supersonic import Supersonic
@@ -84,7 +86,7 @@ my_supersonic = Supersonic("your-github-token")
 pr_url = my_supersonic.create_pr_from_content(
     repo="user/repo",
     content="print('hello world')",
-    path="hello.py"
+    upstream_path="hello.py"
 )
 
 print(f"Created PR: {pr_url}")
@@ -121,7 +123,7 @@ When you have content in memory that you want to propose as a change:
 pr_url = my_supersonic.create_pr_from_content(
     repo="user/repo",
     content="print('hello')",  # The actual content
-    path="src/hello.py",       # Where to put it in the repo
+    upstream_path="src/hello.py",  # Where to put it in the repo
     title="Add hello script",  # Optional
     description="Adds a simple hello world script",  # Optional
     draft=False,  # Optional, create as draft PR
@@ -203,10 +205,10 @@ All PR creation methods accept these common options:
 
 ```python
 # Configure PR options as keyword arguments
-pr_url = my_supersonic.update_content(
+pr_url = my_supersonic.create_pr_from_content(
     repo="user/repo",
     content="print('hello')",
-    path="src/hello.py",
+    upstream_path="src/hello.py",
     title="Add hello script",
     description="Adds a hello world script",
     base_branch="main",
@@ -320,10 +322,10 @@ def handle_improvement_request(repo: str, file_path: str, user_prompt: str):
     
     # Create PR with improvements
     my_supersonic = Supersonic(config)
-    pr_url = my_supersonic.update_content(
+    pr_url = my_supersonic.create_pr_from_content(
         repo=repo,
         content=improved_code,
-        path=file_path,
+        upstream_path=file_path,
         title=f"AI: {user_prompt[:50]}...",
         description="""
         AI-suggested improvements based on code analysis.
@@ -351,7 +353,7 @@ def update_api_docs(repo: str, api_changes: Dict[str, Any]):
     
     # Create PR with all doc updates
     my_supersonic = Supersonic(config)
-    pr_url = my_supersonic.update_files(
+    pr_url = my_supersonic.create_pr_from_files(
         repo=repo,
         files=docs,
         title="Update API documentation",
@@ -377,10 +379,10 @@ def update_customer_config(customer_id: str, new_settings: Dict):
     config_json = json.dumps(new_settings, indent=2)
     
     my_supersonic = Supersonic(config)
-    pr_url = my_supersonic.update_content(
+    pr_url = my_supersonic.create_pr_from_content(
         repo=repo,
         content=config_json,
-        path="settings.json",
+        upstream_path="settings.json",
         title="Update customer configuration",
         description=f"""
         Configuration updates for customer {customer_id}
