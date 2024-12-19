@@ -134,3 +134,78 @@ def test_create_pr_with_options(supersonic, tmp_path):
         changes={"test.txt": "test content"},
         config={"title": "Test PR", "draft": True, "labels": ["test"]},
     )
+
+
+def test_create_pr_with_config_object(supersonic):
+    """Test creating PR with PRConfig object"""
+    from supersonic.core.config import PRConfig
+    
+    config = PRConfig(
+        title="Test PR",
+        description="Test description",
+        draft=True,
+        labels=["test"],
+        reviewers=["user1"],
+    )
+    
+    url = supersonic.create_pr_from_content(
+        repo="owner/repo",
+        content="test content",
+        path="test.txt",
+        config=config,
+    )
+    
+    assert url == "https://github.com/test/pr/1"
+    supersonic.github.create_pr.assert_called_once_with(
+        repo="owner/repo",
+        changes={"test.txt": "test content"},
+        config={"title": "Test PR", "description": "Test description", 
+               "draft": True, "labels": ["test"], "reviewers": ["user1"]},
+    )
+
+
+def test_create_pr_error_handling(supersonic, tmp_path):
+    """Test error handling in PR creation"""
+    with pytest.raises(GitHubError, match="Failed to update file"):
+        supersonic.create_pr_from_file(
+            repo="owner/repo",
+            local_file_path=str(tmp_path / "nonexistent.txt"),
+            upstream_path="test.txt",
+        )
+
+
+def test_create_pr_with_auto_merge(supersonic):
+    """Test creating PR with auto-merge enabled"""
+    url = supersonic.create_pr_from_content(
+        repo="owner/repo",
+        content="test content",
+        path="test.txt",
+        auto_merge=True,
+        merge_strategy="squash",
+    )
+    
+    assert url == "https://github.com/test/pr/1"
+    # Verify auto-merge was enabled
+    supersonic.github.enable_auto_merge.assert_called_once_with(
+        repo="owner/repo",
+        pr_number=1,
+        merge_method="squash",
+    )
+
+
+def test_create_pr_with_team_reviewers(supersonic):
+    """Test creating PR with team reviewers"""
+    url = supersonic.create_pr_from_content(
+        repo="owner/repo",
+        content="test content",
+        path="test.txt",
+        team_reviewers=["team1", "team2"],
+    )
+    
+    assert url == "https://github.com/test/pr/1"
+    # Verify team reviewers were added
+    supersonic.github.add_team_reviewers.assert_called_once_with(
+        repo="owner/repo",
+        pr_number=1,
+        team_reviewers=["team1", "team2"],
+    )
