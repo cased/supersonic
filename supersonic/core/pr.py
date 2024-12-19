@@ -29,7 +29,7 @@ class Supersonic:
 
         self.github = GitHubAPI(self.config.github_token, self.config.base_url)
 
-    async def create_pr(
+    def create_pr(
         self,
         repo: str,
         changes: Dict[str, Optional[str]],
@@ -39,16 +39,6 @@ class Supersonic:
     ) -> str:
         """
         Create a PR with the specified changes.
-
-        Args:
-            repo: Repository name (owner/repo)
-            changes: Dict of file paths and their new content (None for deletion)
-            config: PR configuration
-            branch_name: Name for the new branch (generated if not provided)
-            **kwargs: Additional options
-
-        Returns:
-            URL of the created PR
         """
         try:
             # Process configuration
@@ -63,14 +53,14 @@ class Supersonic:
                 branch_name = f"{self.config.app_name or 'Supersonic'}/{timestamp}"
 
             # Create branch
-            await self.github.create_branch(
+            self.github.create_branch(
                 repo=repo, branch=branch_name, base_branch=config.base_branch
             )
 
             # Create/update/delete files
             for path, content in changes.items():
                 message = f"{'Update' if content is not None else 'Delete'} {path}"
-                await self.github.update_file(
+                self.github.update_file(
                     repo=repo,
                     path=path,
                     content=content,
@@ -79,7 +69,7 @@ class Supersonic:
                 )
 
             # Create PR
-            pr_url = await self.github.create_pull_request(
+            pr_url = self.github.create_pull_request(
                 repo=repo,
                 title=config.title,
                 body=config.description or "",
@@ -93,15 +83,15 @@ class Supersonic:
 
             # Add labels if specified
             if config.labels:
-                await self.github.add_labels(repo, pr_number, config.labels)
+                self.github.add_labels(repo, pr_number, config.labels)
 
             # Add reviewers if specified
             if config.reviewers:
-                await self.github.add_reviewers(repo, pr_number, config.reviewers)
+                self.github.add_reviewers(repo, pr_number, config.reviewers)
 
             # Enable auto-merge if requested
             if config.auto_merge:
-                await self.github.enable_auto_merge(
+                self.github.enable_auto_merge(
                     repo=repo, pr_number=pr_number, merge_method=config.merge_strategy
                 )
 
@@ -127,7 +117,7 @@ class Supersonic:
                     description.append("```")
         return "\n".join(description)
 
-    async def create_pr_from_file(
+    def create_pr_from_file(
         self, repo: str, local_file_path: str, upstream_path: str, **kwargs
     ) -> str:
         """
@@ -147,13 +137,13 @@ class Supersonic:
             content = Path(local_file_path).read_text()
 
             # Create PR with single file change
-            return await self.create_pr(
+            return self.create_pr(
                 repo=repo, changes={upstream_path: content}, config=kwargs
             )
         except Exception as e:
             raise GitHubError(f"Failed to update file: {e}")
 
-    async def create_pr_from_files(
+    def create_pr_from_files(
         self, repo: str, files: Mapping[str, str], **kwargs
     ) -> str:
         """
@@ -172,11 +162,11 @@ class Supersonic:
         try:
             # Convert Mapping to Dict[str, Optional[str]] for create_pr
             changes: Dict[str, Optional[str]] = {k: v for k, v in files.items()}
-            return await self.create_pr(repo=repo, changes=changes, config=kwargs)
+            return self.create_pr(repo=repo, changes=changes, config=kwargs)
         except Exception as e:
             raise GitHubError(f"Failed to update files: {e}")
 
-    async def create_pr_from_content(
+    def create_pr_from_content(
         self, repo: str, content: str, path: str, **kwargs
     ) -> str:
         """
@@ -192,7 +182,7 @@ class Supersonic:
             URL of the created PR
         """
         try:
-            return await self.create_pr(
+            return self.create_pr(
                 repo=repo, changes={path: content}, config=kwargs
             )
         except Exception as e:

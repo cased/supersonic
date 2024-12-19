@@ -1,5 +1,6 @@
-pytest
-pytest-asyncio
-pytest-cov
-ruff
-mypy
+-r requirements.txt
+pytest>=7.4.0
+pytest-cov>=4.1.0
+black>=23.7.0
+ruff>=0.1.9
+mypy>=1.5.1

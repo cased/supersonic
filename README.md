@@ -38,7 +38,6 @@ Supersonic solves this:
 - **Simple, High-Level API**: Create PRs with a single function call, using files or plain text content
 - **Safe Defaults**: All changes are created as PRs, allowing users to review before merging
 - **Enterprise Ready**: Full support for GitHub Enterprise and custom base URLs
-- **Async by Default**: Built for high-performance services that need to handle multiple PR creations
 - **Excessively customizable**: Full control over PR creation, set draft mode, reviewers, labels, etc.
 - **Best for apps, useful for scripts too**: Plug it into your SaaS app and delight your users. Or automate internal workflows.
 
@@ -285,7 +284,7 @@ Supersonic looks for these environment variables:
 Perfect for AI applications that suggest code improvements. Supersonic makes it easy to turn AI suggestions into pull requests:
 
 ```python
-async def handle_improvement_request(repo: str, file_path: str, user_prompt: str):
+def handle_improvement_request(repo: str, file_path: str, user_prompt: str):
     # Your AI logic to generate improvements
     improved_code = await ai.improve_code(user_prompt)
     
@@ -312,7 +311,7 @@ async def handle_improvement_request(repo: str, file_path: str, user_prompt: str
 Keep documentation in sync with code changes:
 
 ```python
-async def update_api_docs(repo: str, api_changes: Dict[str, Any]):
+def update_api_docs(repo: str, api_changes: Dict[str, Any]):
     # Generate updated docs
     docs = {
         "docs/api/endpoints.md": generate_endpoint_docs(api_changes),
@@ -343,7 +342,7 @@ async def update_api_docs(repo: str, api_changes: Dict[str, Any]):
 Manage customer configurations through PRs:
 
 ```python
-async def update_customer_config(customer_id: str, new_settings: Dict):
+def update_customer_config(customer_id: str, new_settings: Dict):
     repo = f"customers/{customer_id}/config"
     config_json = json.dumps(new_settings, indent=2)
     

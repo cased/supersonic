@@ -1,6 +1,7 @@
 from supersonic.core.pr import Supersonic
 from supersonic.core.config import SupersonicConfig, PRConfig
 from supersonic.core.errors import SupersonicError, GitHubError, DiffError, LLMError
+from supersonic.cli import cli
 
 __version__ = "0.1.0"
 
@@ -12,4 +13,5 @@ __all__ = [
     "GitHubError",
     "DiffError",
     "LLMError",
+    "cli",
 ]

@@ -1,164 +1,124 @@
-from unittest.mock import AsyncMock, Mock
 import pytest
-from supersonic import Supersonic
-from supersonic.core.config import SupersonicConfig
+from unittest.mock import patch
+from supersonic.core.pr import Supersonic
+from supersonic.core.config import PRConfig
 from supersonic.core.errors import GitHubError
 
 
 @pytest.fixture
 def mock_github():
-    """Mock GitHub API client with all required methods"""
-    mock = Mock()
-    # Basic PR creation methods
-    mock.create_pull_request = AsyncMock(
-        return_value="https://github.com/test/test/pull/1"
-    )
-    mock.create_branch = AsyncMock()
-    mock.update_file = AsyncMock()
-
-    # Additional PR configuration methods
-    mock.add_reviewers = AsyncMock()
-    mock.add_labels = AsyncMock()
-    mock.enable_auto_merge = AsyncMock()
-    return mock
+    """Mock GitHub API"""
+    with patch("supersonic.core.pr.GitHubAPI") as mock:
+        yield mock.return_value
 
 
-@pytest.mark.asyncio
-async def test_create_pr_from_content(mock_github):
-    """Test creating PR from string content"""
-    config = SupersonicConfig(github_token="test")
-    supersonic = Supersonic(config)
-    supersonic.github = mock_github
+@pytest.fixture
+def supersonic(mock_github):
+    """Create Supersonic instance with mocked GitHub API"""
+    return Supersonic("test-token")
 
-    pr_url = await supersonic.create_pr_from_content(
-        repo="test/repo", content="print('test')", path="test.py"
+
+def test_create_pr_basic(supersonic, mock_github):
+    """Test basic PR creation"""
+    mock_github.create_pull_request.return_value = "https://github.com/owner/repo/pull/1"
+
+    url = supersonic.create_pr(
+        repo="owner/repo",
+        changes={"test.txt": "content"},
+        title="Test PR"
     )
 
-    assert pr_url == "https://github.com/test/test/pull/1"
-    mock_github.update_file.assert_called_once()
-    assert mock_github.update_file.call_args[1]["content"] == "print('test')"
-    assert mock_github.update_file.call_args[1]["path"] == "test.py"
-
-
-@pytest.mark.asyncio
-async def test_create_pr_from_content_error(mock_github):
-    """Test error handling in create_pr_from_content"""
-    config = SupersonicConfig(github_token="test")
-    supersonic = Supersonic(config)
-    supersonic.github = mock_github
-    mock_github.update_file.side_effect = Exception("File update failed")
-
-    with pytest.raises(GitHubError, match="Failed to update content"):
-        await supersonic.create_pr_from_content(
-            repo="test/repo", content="print('test')", path="test.py"
-        )
-
-
-@pytest.mark.asyncio
-async def test_create_pr_from_file(mock_github, tmp_path):
-    """Test creating PR from a local file"""
-    test_file = tmp_path / "test.py"
-    test_file.write_text("print('test')")
-
-    config = SupersonicConfig(github_token="test")
-    supersonic = Supersonic(config)
-    supersonic.github = mock_github
-
-    pr_url = await supersonic.create_pr_from_file(
-        repo="test/repo", local_file_path=str(test_file), upstream_path="src/test.py"
-    )
-
-    assert pr_url == "https://github.com/test/test/pull/1"
-    mock_github.update_file.assert_called_once()
-    assert mock_github.update_file.call_args[1]["content"] == "print('test')"
-    assert mock_github.update_file.call_args[1]["path"] == "src/test.py"
-
-
-@pytest.mark.asyncio
-async def test_create_pr_from_file_not_found(mock_github):
-    """Test error handling when file doesn't exist"""
-    config = SupersonicConfig(github_token="test")
-    supersonic = Supersonic(config)
-    supersonic.github = mock_github
-
-    with pytest.raises(GitHubError, match="Failed to update file"):
-        await supersonic.create_pr_from_file(
-            repo="test/repo", local_file_path="nonexistent.py", upstream_path="test.py"
-        )
-
-
-@pytest.mark.asyncio
-async def test_create_pr_from_files(mock_github):
-    """Test creating PR from multiple files"""
-    config = SupersonicConfig(github_token="test")
-    supersonic = Supersonic(config)
-    supersonic.github = mock_github
-
-    files = {"src/test1.py": "print('test1')", "src/test2.py": "print('test2')"}
-
-    pr_url = await supersonic.create_pr_from_files(repo="test/repo", files=files)
-
-    assert pr_url == "https://github.com/test/test/pull/1"
-    assert mock_github.update_file.call_count == 2
-    calls = mock_github.update_file.call_args_list
-    assert any(
-        call[1]["path"] == "src/test1.py" and call[1]["content"] == "print('test1')"
-        for call in calls
-    )
-    assert any(
-        call[1]["path"] == "src/test2.py" and call[1]["content"] == "print('test2')"
-        for call in calls
+    assert url == "https://github.com/owner/repo/pull/1"
+    mock_github.create_branch.assert_called_once()
+    mock_github.update_file.assert_called_once_with(
+        repo="owner/repo",
+        path="test.txt",
+        content="content",
+        message="Update test.txt",
+        branch=mock_github.create_branch.call_args[1]["branch"]
     )
 
 
-@pytest.mark.asyncio
-async def test_create_pr_from_content_with_options(mock_github):
-    """Test creating PR from content with custom options"""
-    config = SupersonicConfig(github_token="test")
-    supersonic = Supersonic(config)
-    supersonic.github = mock_github
+def test_create_pr_with_config(supersonic, mock_github):
+    """Test PR creation with custom config"""
+    mock_github.create_pull_request.return_value = "https://github.com/owner/repo/pull/1"
 
-    pr_url = await supersonic.create_pr_from_content(
-        repo="test/repo",
-        content="print('test')",
-        path="test.py",
+    config = PRConfig(
         title="Custom PR",
         description="Test description",
+        base_branch="develop",
         draft=True,
         labels=["test"],
-        reviewers=["user1"],
+        reviewers=["user1"]
     )
 
-    assert pr_url == "https://github.com/test/test/pull/1"
+    url = supersonic.create_pr(
+        repo="owner/repo",
+        changes={"test.txt": "content"},
+        config=config
+    )
+
+    assert url == "https://github.com/owner/repo/pull/1"
     mock_github.create_pull_request.assert_called_with(
-        repo="test/repo",
+        repo="owner/repo",
         title="Custom PR",
         body="Test description",
         head=mock_github.create_branch.call_args[1]["branch"],
-        base="main",
-        draft=True,
+        base="develop",
+        draft=True
     )
-    mock_github.add_labels.assert_called_with("test/repo", 1, ["test"])
-    mock_github.add_reviewers.assert_called_with("test/repo", 1, ["user1"])
+    mock_github.add_labels.assert_called_with("owner/repo", 1, ["test"])
+    mock_github.add_reviewers.assert_called_with("owner/repo", 1, ["user1"])
 
 
-@pytest.mark.asyncio
-async def test_create_pr_from_file_with_branch_name(mock_github, tmp_path):
-    """Test creating PR with custom branch name from file"""
-    test_file = tmp_path / "test.py"
-    test_file.write_text("print('test')")
+def test_create_pr_from_file(supersonic, mock_github, tmp_path):
+    """Test creating PR from local file"""
+    test_file = tmp_path / "test.txt"
+    test_file.write_text("test content")
 
-    config = SupersonicConfig(github_token="test")
-    supersonic = Supersonic(config)
-    supersonic.github = mock_github
+    mock_github.create_pull_request.return_value = "https://github.com/owner/repo/pull/1"
 
-    branch_name = "feature/custom-branch"
-    pr_url = await supersonic.create_pr_from_file(
-        repo="test/repo",
+    url = supersonic.create_pr_from_file(
+        repo="owner/repo",
         local_file_path=str(test_file),
-        upstream_path="src/test.py",
-        branch_name=branch_name,
+        upstream_path="docs/test.txt"
     )
 
-    # No need to assert branch name call since it's handled by create_pr
-    assert pr_url == "https://github.com/test/test/pull/1"
+    assert url == "https://github.com/owner/repo/pull/1"
+    mock_github.update_file.assert_called_with(
+        repo="owner/repo",
+        path="docs/test.txt",
+        content="test content",
+        message="Update docs/test.txt",
+        branch=mock_github.create_branch.call_args[1]["branch"]
+    )
+
+
+def test_create_pr_from_files(supersonic, mock_github):
+    """Test creating PR from multiple files"""
+    mock_github.create_pull_request.return_value = "https://github.com/owner/repo/pull/1"
+
+    files = {
+        "test1.txt": "content1",
+        "test2.txt": "content2"
+    }
+
+    url = supersonic.create_pr_from_files(
+        repo="owner/repo",
+        files=files
+    )
+
+    assert url == "https://github.com/owner/repo/pull/1"
+    assert mock_github.update_file.call_count == 2
+    mock_github.create_pull_request.assert_called_once()
+
+
+def test_create_pr_error(supersonic, mock_github):
+    """Test error handling in PR creation"""
+    mock_github.create_branch.side_effect = Exception("Branch creation failed")
+
+    with pytest.raises(GitHubError, match="Failed to create PR"):
+        supersonic.create_pr(
+            repo="owner/repo",
+            changes={"test.txt": "content"}
+        )

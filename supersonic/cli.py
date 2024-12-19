@@ -1,7 +1,6 @@
 import click
 from pathlib import Path
 from typing import Optional, List, Tuple
-import asyncio
 import re
 
 from supersonic import Supersonic
@@ -55,14 +54,12 @@ def update(
         if not upstream_path:
             upstream_path = Path(file).name
 
-        url = asyncio.run(
-            supersonic.create_pr_from_file(
-                repo=repo,
-                local_file_path=file,
-                upstream_path=upstream_path,
-                title=title,
-                draft=draft,
-            )
+        url: str = supersonic.create_pr_from_file(
+            repo=repo,
+            local_file_path=file,
+            upstream_path=upstream_path,
+            title=title,
+            draft=draft,
         )
         click.echo(f"Created PR: {url}")
     except Exception as e:
@@ -86,14 +83,12 @@ def update_content(
 ) -> None:
     """Update a file with provided content"""
     supersonic = Supersonic(config)
-    url = asyncio.run(
-        supersonic.create_pr_from_content(
-            repo=repo,
-            content=content,
-            path=path,
-            title=title or f"Update {path}",
-            draft=draft,
-        )
+    url: str = supersonic.create_pr_from_content(
+        repo=repo,
+        content=content,
+        path=path,
+        title=title or f"Update {path}",
+        draft=draft,
     )
     click.echo(f"Created PR: {url}")
 
@@ -130,10 +125,8 @@ def update_files(
             except Exception as e:
                 raise click.BadParameter(f"Failed to read file {local_path}: {e}")
 
-        url = asyncio.run(
-            supersonic.create_pr_from_files(
-                repo=repo, files=files, title=title, draft=draft
-            )
+        url: str = supersonic.create_pr_from_files(
+            repo=repo, files=files, title=title, draft=draft
         )
         click.echo(f"Created PR: {url}")
     except Exception as e:
