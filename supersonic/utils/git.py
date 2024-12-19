@@ -124,4 +124,3 @@ class GitHandler:
 
         except Exception as e:
             raise GitError(f"Failed to apply diff: {e}")
-

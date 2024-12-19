@@ -10,7 +10,9 @@ def mock_github():
     """Mock GitHub API with all required methods"""
     with patch("supersonic.core.pr.GitHubAPI") as mock:
         instance = mock.return_value
-        instance.create_pull_request.return_value = "https://github.com/owner/repo/pull/1"
+        instance.create_pull_request.return_value = (
+            "https://github.com/owner/repo/pull/1"
+        )
         instance.create_branch.return_value = None
         instance.update_file.return_value = None
         instance.add_labels.return_value = None
@@ -31,11 +33,11 @@ def supersonic(mock_github):
 def test_create_pr_from_file(mock_github, tmp_path):
     """Test creating PR from file"""
     supersonic = Supersonic(config=SupersonicConfig(github_token="test"))
-    
+
     # Create the test file
     test_file = tmp_path / "test.txt"
     test_file.write_text("test content")
-    
+
     url = supersonic.create_pr_from_file(
         repo="owner/repo",
         local_file_path=str(test_file),
@@ -49,7 +51,7 @@ def test_create_pr_from_file(mock_github, tmp_path):
 def test_create_pr_from_content_with_kwargs(mock_github):
     """Test creating PR from content with kwargs"""
     supersonic = Supersonic(config=SupersonicConfig(github_token="test"))
-    
+
     url = supersonic.create_pr_from_content(
         repo="owner/repo",
         content="test content",
@@ -180,7 +182,7 @@ def test_create_pr_using_dict_config(supersonic):
 def test_create_pr_kwargs_ordering(mock_github):
     """Test PR creation with kwargs in different order"""
     supersonic = Supersonic(config=SupersonicConfig(github_token="test"))
-    
+
     url = supersonic.create_pr_from_content(
         content="test content",
         repo="owner/repo",
@@ -192,11 +194,13 @@ def test_create_pr_kwargs_ordering(mock_github):
 
 def test_create_pr_defaults(mock_github):
     """Test PR creation with default values"""
-    supersonic = Supersonic(config=SupersonicConfig(
-        github_token="test",
-        default_pr_config=PRConfig(title="Default Title")  # Add default title
-    ))
-    
+    supersonic = Supersonic(
+        config=SupersonicConfig(
+            github_token="test",
+            default_pr_config=PRConfig(title="Default Title"),  # Add default title
+        )
+    )
+
     url = supersonic.create_pr_from_content(
         repo="owner/repo",
         content="test content",
@@ -208,7 +212,7 @@ def test_create_pr_defaults(mock_github):
 def test_create_pr_empty_lists(mock_github):
     """Test PR creation with empty lists"""
     supersonic = Supersonic(config=SupersonicConfig(github_token="test"))
-    
+
     url = supersonic.create_pr_from_content(
         repo="owner/repo",
         content="test content",
@@ -221,7 +225,7 @@ def test_create_pr_empty_lists(mock_github):
 def test_create_pr_unknown_kwargs(mock_github):
     """Test PR creation with unknown kwargs"""
     supersonic = Supersonic(config=SupersonicConfig(github_token="test"))
-    
+
     with pytest.raises(ValueError):
         supersonic.create_pr_from_content(
             repo="owner/repo",

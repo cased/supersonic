@@ -17,7 +17,9 @@ class Supersonic:
     ) -> None:
         """Initialize PR creator"""
         self.config = config
-        self.github = github_api or GitHubAPI(token=config.github_token, base_url=config.base_url)
+        self.github = github_api or GitHubAPI(
+            token=config.github_token, base_url=config.base_url
+        )
 
     def _prepare_pr_config(
         self,
@@ -119,7 +121,9 @@ class Supersonic:
         """Create PR from local file"""
         try:
             content = Path(local_file_path).read_text()
-            return self.create_pr(repo=repo, changes={upstream_path: content}, title=title, draft=draft)
+            return self.create_pr(
+                repo=repo, changes={upstream_path: content}, title=title, draft=draft
+            )
         except Exception as e:
             raise GitHubError(f"Failed to update file: {e}")
 
@@ -135,7 +139,18 @@ class Supersonic:
         """Create PR from content"""
         try:
             # Check for unknown kwargs before passing to create_pr
-            valid_kwargs = {'title', 'draft', 'description', 'base_branch', 'labels', 'reviewers', 'team_reviewers', 'merge_strategy', 'delete_branch_on_merge', 'auto_merge'}
+            valid_kwargs = {
+                "title",
+                "draft",
+                "description",
+                "base_branch",
+                "labels",
+                "reviewers",
+                "team_reviewers",
+                "merge_strategy",
+                "delete_branch_on_merge",
+                "auto_merge",
+            }
             unknown_kwargs = set(kwargs.keys()) - valid_kwargs
             if unknown_kwargs:
                 raise ValueError(f"Unknown arguments: {', '.join(unknown_kwargs)}")
@@ -145,7 +160,7 @@ class Supersonic:
                 changes={upstream_path: content},
                 title=title or "Update file",  # Provide default title
                 draft=draft,
-                **kwargs
+                **kwargs,
             )
         except ValueError as e:
             raise ValueError(str(e))
@@ -163,7 +178,9 @@ class Supersonic:
         """Create a PR to update multiple files with provided content."""
         try:
             changes: Dict[str, Optional[str]] = {k: v for k, v in contents.items()}
-            return self.create_pr(repo=repo, changes=changes, title=title, draft=draft, **kwargs)
+            return self.create_pr(
+                repo=repo, changes=changes, title=title, draft=draft, **kwargs
+            )
         except Exception as e:
             raise GitHubError(f"Failed to update files: {e}")
 
@@ -185,6 +202,8 @@ class Supersonic:
                 except Exception as e:
                     raise GitHubError(f"Failed to read file {local_path}: {e}")
 
-            return self.create_pr(repo=repo, changes=contents, title=title, draft=draft, **kwargs)
+            return self.create_pr(
+                repo=repo, changes=contents, title=title, draft=draft, **kwargs
+            )
         except Exception as e:
             raise GitHubError(f"Failed to update files: {e}")
