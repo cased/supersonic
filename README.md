@@ -1,6 +1,6 @@
 # Supersonic
 
-Streamlined GitHub PR automation for modern applications. Supersonic provides a high-level API for programmatically creating and managing Pull Requests, designed specifically for AI and SaaS applications that need to propose changes to user repositories.
+Streamlined GitHub PR automation for modern applications. Supersonic is a high-level API for creating and managing Pull Requests, designed specifically for AI and SaaS applications that need to propose changes to user repositories.
 
 ## Table of Contents
 
