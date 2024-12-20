@@ -156,7 +156,11 @@ class Supersonic:
         try:
             content = Path(local_file_path).read_text()
             return self.create_pr(
-                repo=repo, changes={upstream_path: content}, title=title, draft=draft, **kwargs
+                repo=repo,
+                changes={upstream_path: content},
+                title=title,
+                draft=draft,
+                **kwargs,
             )
         except Exception as e:
             raise GitHubError(f"Failed to update file: {e}")
