@@ -127,12 +127,36 @@ class Supersonic:
         upstream_path: str,
         title: Optional[str] = None,
         draft: bool = False,
+        **kwargs: Any,
     ) -> str:
-        """Create PR from local file"""
+        """Create PR from local file.
+
+        Args:
+            repo: Repository in format "owner/repo"
+            local_file_path: Path to local file to upload
+            upstream_path: Target path in repository
+            title: PR title (optional)
+            draft: Create as draft PR (optional)
+            **kwargs: Additional PR options:
+                description (str): PR description
+                base_branch (str): Target branch (default: main)
+                labels (List[str]): Labels to add
+                reviewers (List[str]): Reviewers to request
+                team_reviewers (List[str]): Team reviewers to request
+                auto_merge (bool): Enable auto-merge
+                merge_strategy (str): Merge strategy (merge/squash/rebase)
+                delete_branch_on_merge (bool): Delete branch after merge
+
+        Returns:
+            str: URL of created pull request
+
+        Raises:
+            GitHubError: If PR creation fails
+        """
         try:
             content = Path(local_file_path).read_text()
             return self.create_pr(
-                repo=repo, changes={upstream_path: content}, title=title, draft=draft
+                repo=repo, changes={upstream_path: content}, title=title, draft=draft, **kwargs
             )
         except Exception as e:
             raise GitHubError(f"Failed to update file: {e}")
@@ -146,7 +170,31 @@ class Supersonic:
         draft: bool = False,
         **kwargs: Any,
     ) -> str:
-        """Create PR from content"""
+        """Create PR from content string.
+
+        Args:
+            repo: Repository in format "owner/repo"
+            content: Content to add/update
+            upstream_path: Target path in repository
+            title: PR title (optional)
+            draft: Create as draft PR (optional)
+            **kwargs: Additional PR options:
+                description (str): PR description
+                base_branch (str): Target branch (default: main)
+                labels (List[str]): Labels to add
+                reviewers (List[str]): Reviewers to request
+                team_reviewers (List[str]): Team reviewers to request
+                auto_merge (bool): Enable auto-merge
+                merge_strategy (str): Merge strategy (merge/squash/rebase)
+                delete_branch_on_merge (bool): Delete branch after merge
+
+        Returns:
+            str: URL of created pull request
+
+        Raises:
+            GitHubError: If PR creation fails
+            ValueError: If unknown kwargs are provided
+        """
         try:
             # Check for unknown kwargs before passing to create_pr
             valid_kwargs = {
@@ -185,7 +233,29 @@ class Supersonic:
         draft: bool = False,
         **kwargs: Any,
     ) -> str:
-        """Create a PR to update multiple files with provided content."""
+        """Create a PR to update multiple files with provided content.
+
+        Args:
+            repo: Repository in format "owner/repo"
+            contents: Dict mapping file paths to content
+            title: PR title (optional)
+            draft: Create as draft PR (optional)
+            **kwargs: Additional PR options:
+                description (str): PR description
+                base_branch (str): Target branch (default: main)
+                labels (List[str]): Labels to add
+                reviewers (List[str]): Reviewers to request
+                team_reviewers (List[str]): Team reviewers to request
+                auto_merge (bool): Enable auto-merge
+                merge_strategy (str): Merge strategy (merge/squash/rebase)
+                delete_branch_on_merge (bool): Delete branch after merge
+
+        Returns:
+            str: URL of created pull request
+
+        Raises:
+            GitHubError: If PR creation fails
+        """
         try:
             changes: Dict[str, Optional[str]] = {k: v for k, v in contents.items()}
             return self.create_pr(
@@ -202,7 +272,29 @@ class Supersonic:
         draft: bool = False,
         **kwargs: Any,
     ) -> str:
-        """Create a PR to update multiple files from local files."""
+        """Create a PR to update multiple files from local files.
+
+        Args:
+            repo: Repository in format "owner/repo"
+            files: Dict mapping local file paths to target paths
+            title: PR title (optional)
+            draft: Create as draft PR (optional)
+            **kwargs: Additional PR options:
+                description (str): PR description
+                base_branch (str): Target branch (default: main)
+                labels (List[str]): Labels to add
+                reviewers (List[str]): Reviewers to request
+                team_reviewers (List[str]): Team reviewers to request
+                auto_merge (bool): Enable auto-merge
+                merge_strategy (str): Merge strategy (merge/squash/rebase)
+                delete_branch_on_merge (bool): Delete branch after merge
+
+        Returns:
+            str: URL of created pull request
+
+        Raises:
+            GitHubError: If PR creation fails
+        """
         try:
             contents: Dict[str, Optional[str]] = {}
             for local_path, upstream_path in files.items():
