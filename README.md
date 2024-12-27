@@ -421,7 +421,7 @@ uv run pytest
 
 ## Other implementations
 
-Check out [https://github.com/cased/hypersonic](hypersonic) for the Typescript version.
+Check out [hypersonic](https://github.com/cased/hypersonic) for the Typescript version.
 
 ## License
 
