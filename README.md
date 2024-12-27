@@ -419,6 +419,10 @@ uv pip install -e .
 uv run pytest
 ```
 
+## Other implementations
+
+Check out [https://github.com/cased/hypersonic](hypersonic) for the Typescript version.
+
 ## License
 
 MIT License - see [LICENSE](LICENSE) file for details.
